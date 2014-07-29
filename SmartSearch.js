@@ -9,6 +9,11 @@ function ClearFields() {
      document.getElementById("searchInput").value = "";
 }
 
+function reset() {
+    URL = "http://www.factual.com/data/t/places#";
+    $("#history").empty();   
+}
+
 function categorize(filterName) {
     if(filterName == "state" || filterName == "province"){
         filterName = "region";
@@ -45,7 +50,7 @@ function hasFilter(input) {
 
 function goToData() {
     var searchInput = document.getElementById("searchInput").value;
-    document.getElementById("history").innerHTML = document.getElementById("history").innerHTML+searchInput+"<br/>";    
+    $("#history").html = document.getElementById("history").innerHTML+searchInput+"<br/>";    
         //if search contains a filter, then separate filter and search values
         if(hasFilter(searchInput)){
             var filterName = searchInput.substring(0, searchInput.indexOf(":"));
