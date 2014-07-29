@@ -1,5 +1,5 @@
 
-var facetable = ["country", "region", "state", "province", "locality", "town", "city", "zipcode", "postcode", "postalcode", "category", "chain", "chain_name"];
+var facetable = ["country", "region", "state", "province", "locality", "town", "city", "zipcode", "zip", "postcode", "postalcode", "category", "chain", "chain_name"];
 var filtersHistory = {country:0, region:0, locality:0, post_town:0, category:0, chain_name:0};
 var filtersCount = 0;
 var qHistory = [];
@@ -11,7 +11,10 @@ function ClearFields() {
 
 function reset() {
     URL = "http://www.factual.com/data/t/places#";
-    $("#history").empty();   
+    $("#history").empty();
+    filtersHistory = {country:0, region:0, locality:0, post_town:0, category:0, chain_name:0};
+    filtersCount = 0;
+    qHistory = [];
 }
 
 function categorize(filterName) {
@@ -21,7 +24,7 @@ function categorize(filterName) {
         filterName = "locality";
     }else if(filterName == "chain") {
         filterName = "chain_name";
-    }else if(filterName == "zipcode" || filterName == "postcode" || filterName == "postalcode"){
+    }else if(filterName == "zipcode" || filterName == "zip" || filterName == "postcode" || filterName == "postalcode"){
         filterName = "post_town";   
     }
     return filterName;
@@ -50,8 +53,9 @@ function hasFilter(input) {
 
 function goToData() {
     var searchInput = document.getElementById("searchInput").value;
-    $("#history").append('<div class="filterbox">'+searchInput+'</div></br>');
-    //= document.getElementById("history").innerHTML+searchInput+"<br/>";    
+    $("#history").append('<div class="filterbox">'+searchInput+'</div>');
+    //= document.getElementById("history").innerHTML+searchInput+"<br/>"; 
+    console.log(hasFilter(searchInput));
         //if search contains a filter, then separate filter and search values
         if(hasFilter(searchInput)){
             var filterName = searchInput.substring(0, searchInput.indexOf(":"));
