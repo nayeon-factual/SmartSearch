@@ -1,5 +1,6 @@
-var facetable = ["country", "region", "state", "province", "locality", "town", "city", "zipcode", "postcode", "postalcode", "category", "chain"];
-var filtersHistory = {country:0, region:0, locality:0, post_town:0, category:0, chain:0};
+
+var facetable = ["country", "region", "state", "province", "locality", "town", "city", "zipcode", "postcode", "postalcode", "category", "chain", "chain_name"];
+var filtersHistory = {country:0, region:0, locality:0, post_town:0, category:0, chain_name:0};
 var filtersCount = 0;
 var qHistory = [];
 var URL = "http://www.factual.com/data/t/places#";
@@ -13,6 +14,8 @@ function categorize(filterName) {
         filterName = "region";
     }else if(filterName == "city" || filterName == "town"){
         filterName = "locality";
+    }else if(filterName == "chain") {
+        filterName = "chain_name";
     }else if(filterName == "zipcode" || filterName == "postcode" || filterName == "postalcode"){
         filterName = "post_town";   
     }
@@ -20,6 +23,7 @@ function categorize(filterName) {
 }
 
 function formatNewFilterInput(filter, input) {
+    input = input.split(' ').join('+');
     filter = '"'+filter+'"'; 
     input = '"'+input+'"';
     return '{'+filter+':{"$eq":'+input+'}}';
@@ -65,6 +69,7 @@ function goToData() {
                     URL = URL.slice(0, URL.indexOf('filters={"$and":[')+17)+newFilterInput+','+URL.slice(URL.indexOf('filters={"$and":[')+17); 
 
                 } else if (filtersHistory[fName]>0) {
+                    filterValue = filterValue.split(' ').join('+');
                     URL = URL.split('"'+fName+'":{"$eq"').join('"'+fName+'":{"$in"');
                     var firstIndex = URL.indexOf(fName+'":{"$in":')+fName.length+9;
                     var closingBraceIndex = URL.slice(firstIndex).indexOf("}}")
@@ -73,10 +78,11 @@ function goToData() {
                 
                 filtersHistory[fName]+=1;
                 filtersCount += 1;
-                console.log(URL);
-                window.open(URL);
+//                window.open(URL);
+                
             }else{
-                alert("filter field is incorrect!");
+                //**TODO** "Did you mean:"
+                alert("filter field is invalid!!");
             }
 
         //search did not contain filter(keyword search)
@@ -84,30 +90,17 @@ function goToData() {
             qInput = formatqInput(searchInput);
             if(qHistory.length==0 && filtersCount==0){
                 URL = URL+'q='+qInput;
-                console.log(URL);
             }else if(qHistory.length==0 && filtersCount>0){
                 URL = URL+'&q='+qInput;
             }else if(qHistory.length>0){
                 URL = URL.slice(0, URL.indexOf("q=")+2)+qInput+','+URL.slice(URL.indexOf("q=")+2);
             }
             qHistory.push(qInput);
-            window.open(URL);
-        }          
+//            window.open(URL);
+        }
+    ClearFields();
 }
 
-
-////&filters={"$and":[    finput1, finput2    ]}
-////'&filters={"$and": [ 
-//{' "country":{"$eq":"US"}} 
-//]}
-//
-////q="santa+monica","college"
-//
-//http://www.factual.com/data/t/places#filters={"$and":[{"post_town":{"$in":"90024"}}]} 
-//
-//filters={"$and":[      
-//
-//finput1 = {"country":{"$in":["US","CN"]}},
-//finput2 = {"region":{"$in":["CA"]}},
-//{"category_labels":{"$eq":"[%5C"COMMUNITY+AND+GOVERNMENT%5C",%5C"EDUCATION%5C",%5C"COLLEGES+AND+UNIVERSITIES%5C"]"}}
-//]}
+function openURL() {
+    window.open(URL);
+}
