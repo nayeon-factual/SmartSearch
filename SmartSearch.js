@@ -4,6 +4,7 @@ var filtersHistory = {country:0, region:0, locality:0, post_town:0, category:0, 
 var filtersCount = 0;
 var qHistory = [];
 var URL = "http://www.factual.com/data/t/places#";
+retrieve();
 
 function ClearFields() {
      document.getElementById("searchInput").value = "";
@@ -12,7 +13,7 @@ function ClearFields() {
 function reset() {
     URL = "http://www.factual.com/data/t/places#";
     $("#history").empty();
-    filtersHistory = {country:0, region:0, locality:0, post_town:0, category:0, chain_name:0};
+    filtersHistory = {country:0, region:0, locality:0, post_town:0, category_id:0, chain_name:0};
     filtersCount = 0;
     qHistory = [];
 }
@@ -114,3 +115,7 @@ function goToData() {
 function openURL() {
     window.open(URL);
 }
+
+//function retrieve() {
+//    console.log($.get('http://api.v3.factual.com/t/restaurants-us?filters={"name":{"$bw":"star"}}&include_count=true'));
+//}
