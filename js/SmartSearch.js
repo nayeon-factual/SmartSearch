@@ -1,24 +1,51 @@
-
-var facetable = ["country", "region", "state", "province", "locality", "town", "city", "zipcode", "zip", "postcode", "postalcode", "category", "chain", "chain_name"];
+var facetable = ["country", "region", "state", "province", "locality", "town", "city", "zipcode", "zip", "postcode", "postalcode", "category", "chain", "chain name"];
 var filtersHistory = {country:0, region:0, locality:0, post_town:0, category_ids:0, chain_name:0};
 var filtersCount = 0;
 var qHistory = [];
 var URL = "http://www.factual.com/data/t/places#";
-filterSelect();
+//filterSelect();
 console.log(Object.keys(taxonomy));
 
 function keyPress(){
     //on enter
     if (event.keyCode == 13) {
         document.getElementById('searchButton').click();
-    //on colon
+    //on colon ":"
     }else if(event.keyCode == 186){
-        $("#searchInput").autocomplete({
-        source: Object.keys(keyTerms)
-      });
+        var filterName = document.getElementById("searchInput").value;
+        $('#categoryLabel').html(filterName+' :');
+        swapView();
+        setSelect2(filterName);
     }
 }
 
+function swapView(){
+    //Show Filter View
+    $('.hiddenToggle').css('display', 'block');
+    //**TODO** add red/green filter color based on facetable filter
+    $('#filterInput').focus();
+}
+
+function setSelect2(filterName){
+    var filterList = [{text: filterName, children:[]}];
+        for(i=0; i<Object.keys(taxonomy).length; i++){
+            var catArray = {};
+            var catID = Object.keys(taxonomy)[i];
+            catArray["id"] = catID;
+            catArray["text"] = taxonomy[catID];
+            filterList[0]["children"].push(catArray);
+        }
+    $(document).ready(function() {
+        $("#filterInput").select2({
+            multiple: true,
+            data: filterList,
+            maximumSelectionSize: 1
+        }).on('change', function(e){
+            //e.value returns category ID of the selected --> put into URL
+        });
+});
+}
+                                  
 function ClearFields() {
      document.getElementById("searchInput").value = "";
 }
@@ -36,7 +63,7 @@ function categorize(filterName) {
         filterName = "region";
     }else if(filterName == "city" || filterName == "town"){
         filterName = "locality";
-    }else if(filterName == "chain") {
+    }else if(filterName == "chain" || filterName == "chain name") {
         filterName = "chain_name";
     }else if(filterName == "category") {
         filterName = "category_ids";
@@ -44,22 +71,6 @@ function categorize(filterName) {
         filterName = "post_town";   
     }
     return filterName;
-}
-
-function filterSelect(){
-    var filterList = [{text: 'Filters',children:[]}];
-        for(i=0; i<facetable.length; i++){
-            var catArray = {};
-            var cat = facetable[i];
-            catArray["id"] = cat;
-            catArray["text"] = cat;
-            filterList[0]["children"].push(catArray);
-        }
-    console.log(filterList);
-
-     $("#searchInput").select2({
-        data: filterList
-    });
 }
 
 function formatNewFilterInput(filter, input) {
@@ -130,9 +141,13 @@ function generateURL(fName, filterValue) {
     }
 }
 
-function goToData() {
+function goToFilterData() {
+
+}
+
+function goToKeyWordData() {
     var searchInput = document.getElementById("searchInput").value;
-    $("#history").append('<div class="filterbox">'+searchInput+'</div>');
+    
         //if search contains a filter, then separate filter and search values
         if(hasFilter(searchInput)){
             var filterName = searchInput.substring(0, searchInput.indexOf(":"));
@@ -169,6 +184,7 @@ function goToData() {
             }
             qHistory.push(qInput);
         }
+    $("#history").append('<div class="filterbox">'+searchInput+'</div>');
     ClearFields();
 }
 
