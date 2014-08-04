@@ -1,18 +1,19 @@
 var facetable = ["country", "region", "state", "province", "locality", "town", "city", "zipcode", "zip", "postcode", "postalcode", "category", "chain", "chain name"];
+
 var filtersHistory = {country:0, region:0, locality:0, post_town:0, category_ids:0, chain_name:0};
 var filtersCount = 0;
 var qHistory = [];
+
 var URL = "http://www.factual.com/data/t/places#";
-//filterSelect();
-console.log(Object.keys(taxonomy));
 
 function keyPress(){
     //on enter
     if (event.keyCode == 13) {
-        document.getElementById('searchButton').click();
+        updateqURL();
     //on colon ":"
     }else if(event.keyCode == 186){
         var filterName = $('.searchInput').val();
+        //**TODO** make sure filterName is a valid filter Name. 
         $('#categoryLabel').html(filterName+' :');
         swapView();
         setSelect2(filterName);
@@ -23,18 +24,21 @@ function swapView(){
     //Show Filter View
     $('.hiddenToggle').css('display', 'block');
     //**TODO** add red/green filter color based on facetable filter
-    $('.filterInput').focus();
+//    $('.filterInput').focus();
 }
 
 function setSelect2(filterName){
-    //**TODO** Replace this function with getFilterList(filterName)
+    var objName = categorize(filterName);
+    var obj = eval(objName);
+    var objKeys = Object.keys(obj);
+    
     var filterList = [{text: filterName, children:[]}];
-        for(i=0; i<Object.keys(taxonomy).length; i++){
-            var catArray = {};
-            var catID = Object.keys(taxonomy)[i];
-            catArray["id"] = catID;
-            catArray["text"] = taxonomy[catID];
-            filterList[0]["children"].push(catArray);
+        for(i=0; i<objKeys.length; i++){
+            var filt_set = {};
+            var filt_ID = objKeys[i];
+            filt_set["id"] = filt_ID;
+            filt_set["text"] = obj[filt_ID];
+            filterList[0]["children"].push(filt_set);
         }
     $(document).ready(function() {
         $(".filterInput").select2({
@@ -43,12 +47,13 @@ function setSelect2(filterName){
             maximumSelectionSize: 1
         }).on('change', function(e){
             //e.value returns category ID of the selected --> put into URL
+            updateFiltersURL(objName, e.val[0]);
         });
 });
 }
                                   
 function ClearFields() {
-     document.getElementsByClassName("searchInput").value = "";
+     $(".searchInput").val('');
 }
 
 function reset() {
@@ -87,39 +92,16 @@ function formatqInput(i) {
     return i;
 }
 
-function hasFilter(input) {
-    if(input.indexOf(":")>-1){
-        return true;
-    }else{
-        return false;
-    }
-}
-//
-//function getCategoryIDs(filterValue){
-//    
-//    var foo = $.getJSON('places-categories.json', function(data) {
-//        var matchedIDs = [];
-//        for(i=0; i < Object.keys(data).length; i++){
-//            var catID = i+1;
-//            var name = data[catID].Name;
-//            var parent = data[catID].Parent;
-//            if(name.toLowerCase()==filterValue.toLowerCase()){
-//                matchedIDs.push(catID);
-//                var parentID = catID;
-//            }else if(matchedIDs.length>0 && parent == matchedIDs[0]){
-//                matchedIDs.push(catID);
-//            }else{
-//                //**TODO** how to handle no match
-//            }
-//        }
-//        console.log("getCategoryIds: " + matchedIDs);
-//        return matchedIDs;
-//    })
-//    return foo;
+//function hasFilter(input) {
+//    if(input.indexOf(":")>-1){
+//        return true;
+//    }else{
+//        return false;
+//    }
 //}
 
-
 function generateURL(fName, filterValue) {
+//    console.log(fName+' '+filterValue);
     if (filtersCount==0) {
         firstInput = formatNewFilterInput(fName, filterValue);
         //check if there is already a keyword filter  
@@ -142,52 +124,31 @@ function generateURL(fName, filterValue) {
     }
 }
 
-function goToFilterData() {
-
+function updateFiltersURL (objName, selectVal) { //for countries, take in countries etc. 
+//            var filterName = objName;
+//            var filterValue = selectVal;
+    generateURL(objName, selectVal);
+    filtersHistory[objName]+=1;
+    filtersCount += 1;
 }
 
-function goToKeyWordData() {
-    var searchInput = document.getElementsByClassName("searchInput").value;
-    
-        //if search contains a filter, then separate filter and search values
-        if(hasFilter(searchInput)){
-            var filterName = searchInput.substring(0, searchInput.indexOf(":"));
-            var filterValue = searchInput.substring(searchInput.indexOf(":")+1);
-            //check if filter is facetable
-            if(-1 < facetable.indexOf(filterName)){
-                //**TODO** regexes check
-                if(filterName == "category"){
-                    fName = categorize(filterName);
-                    var filterID = getCategoryIDs(filterValue);
-                    //generateURL(fName, filterID);
-                }else{
-                    fName = categorize(filterName);
-                    generateURL(fName, filterValue);
-                }
-                filtersHistory[fName]+=1;
-                filtersCount += 1;
-                
-                
-            }else{
-                //**TODO** "Did you mean:"
-                alert("filter field is invalid!!");
-            }
 
-        //search did not contain filter(keyword search)
-        } else {
-            qInput = formatqInput(searchInput);
-            if(qHistory.length==0 && filtersCount==0){
-                URL = URL+'q='+qInput;
-            }else if(qHistory.length==0 && filtersCount>0){
-                URL = URL+'&q='+qInput;
-            }else if(qHistory.length>0){
-                URL = URL.slice(0, URL.indexOf("q=")+2)+qInput+','+URL.slice(URL.indexOf("q=")+2);
-            }
-            qHistory.push(qInput);
+function updateqURL() {
+    var searchInput = $('.searchInput').val();
+        
+    qInput = formatqInput(searchInput);
+        if(qHistory.length==0 && filtersCount==0){
+            URL = URL+'q='+qInput;
+        }else if(qHistory.length==0 && filtersCount>0){
+            URL = URL+'&q='+qInput;
+        }else if(qHistory.length>0){
+            URL = URL.slice(0, URL.indexOf("q=")+2)+qInput+','+URL.slice(URL.indexOf("q=")+2);
         }
-    $("#history").append('<div class="filterbox">'+searchInput+'</div>');
-    ClearFields();
-}
+        //Add to Keywords History
+        qHistory.push(qInput);
+        $("#history").append('<div class="filterbox">'+searchInput+'</div>');
+        ClearFields();
+        }
 
 function openURL() {
     window.open(URL);
