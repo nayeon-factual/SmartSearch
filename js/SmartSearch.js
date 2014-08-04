@@ -4,7 +4,20 @@ var filtersHistory = {country:0, region:0, locality:0, post_town:0, category_ids
 var filtersCount = 0;
 var qHistory = [];
 var URL = "http://www.factual.com/data/t/places#";
-getCategoryID();
+filterSelect();
+console.log(Object.keys(taxonomy));
+
+function keyPress(){
+    //on enter
+    if (event.keyCode == 13) {
+        document.getElementById('searchButton').click();
+    //on colon
+    }else if(event.keyCode == 186){
+        $("#searchInput").autocomplete({
+        source: Object.keys(keyTerms)
+      });
+    }
+}
 
 function ClearFields() {
      document.getElementById("searchInput").value = "";
@@ -33,6 +46,22 @@ function categorize(filterName) {
     return filterName;
 }
 
+function filterSelect(){
+    var filterList = [{text: 'Filters',children:[]}];
+        for(i=0; i<facetable.length; i++){
+            var catArray = {};
+            var cat = facetable[i];
+            catArray["id"] = cat;
+            catArray["text"] = cat;
+            filterList[0]["children"].push(catArray);
+        }
+    console.log(filterList);
+
+     $("#searchInput").select2({
+        data: filterList
+    });
+}
+
 function formatNewFilterInput(filter, input) {
     input = input.split(' ').join('+');
     filter = '"'+filter+'"'; 
@@ -53,12 +82,30 @@ function hasFilter(input) {
         return false;
     }
 }
+//
+//function getCategoryIDs(filterValue){
+//    
+//    var foo = $.getJSON('places-categories.json', function(data) {
+//        var matchedIDs = [];
+//        for(i=0; i < Object.keys(data).length; i++){
+//            var catID = i+1;
+//            var name = data[catID].Name;
+//            var parent = data[catID].Parent;
+//            if(name.toLowerCase()==filterValue.toLowerCase()){
+//                matchedIDs.push(catID);
+//                var parentID = catID;
+//            }else if(matchedIDs.length>0 && parent == matchedIDs[0]){
+//                matchedIDs.push(catID);
+//            }else{
+//                //**TODO** how to handle no match
+//            }
+//        }
+//        console.log("getCategoryIds: " + matchedIDs);
+//        return matchedIDs;
+//    })
+//    return foo;
+//}
 
-function getCategoryID(){
-    $.getJSON('places-categories.json', function(data) {
-        
-    })
-}
 
 function generateURL(fName, filterValue) {
     if (filtersCount==0) {
@@ -86,7 +133,6 @@ function generateURL(fName, filterValue) {
 function goToData() {
     var searchInput = document.getElementById("searchInput").value;
     $("#history").append('<div class="filterbox">'+searchInput+'</div>');
-    console.log(hasFilter(searchInput));
         //if search contains a filter, then separate filter and search values
         if(hasFilter(searchInput)){
             var filterName = searchInput.substring(0, searchInput.indexOf(":"));
@@ -96,14 +142,15 @@ function goToData() {
                 //**TODO** regexes check
                 if(filterName == "category"){
                     fName = categorize(filterName);
-                    var filterID = getCategoryID(filterValue);
-                    generateURL(fName, filterID);
+                    var filterID = getCategoryIDs(filterValue);
+                    //generateURL(fName, filterID);
                 }else{
                     fName = categorize(filterName);
                     generateURL(fName, filterValue);
                 }
                 filtersHistory[fName]+=1;
                 filtersCount += 1;
+                
                 
             }else{
                 //**TODO** "Did you mean:"

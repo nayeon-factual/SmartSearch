@@ -4,21 +4,31 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link href='SmartSearch.css' rel='stylesheet'/>
         <script src="//code.jquery.com/jquery-1.11.1.js"></script>
+        <script type="text/javascript" src="keyterms.js"></script>
+        <script type="text/javascript" src="taxonomy.js"></script>
         <script type="text/javascript" src="SmartSearch.js"></script>
+        
+
     </head>
     
     <body>
     
-	<div id="search">
-        <input type="text" id="searchInput" placeholder="Search" onkeydown="if (event.keyCode == 13) document.getElementById('searchButton').click();"/>
-	</div>
+    <!-- General Input Search -->
+    <input type="text" class="inputfield" id="searchInput" placeholder="Search (general - remove later)" onkeydown="keyPress();"/>
+    <!-- Filters Input Search -->
+    <div class="hiddenToggle">
+        <div class="inputfield" id="categoryLabel">category:</div>
+        <input type="text" class="inputfield" id="filterInput" placeholder="Search (filter - remove later)" onkeydown="keyPress();"/>
+    </div>
+        
+        
         
     <div id="buttons">
         <input type="button" value="Add Filter" id="searchButton" onClick="goToData();"/>
         <input type="button" value="See Results" id="resultsButton" onClick="openURL();"/>
+        <input type="button" value="Reset Filters" id="resetButton" onClick="reset();"/>
     </div>    
     
-    <input type="button" value="Reset Filters" id="resetButton" onClick="reset();"/>
     <div id="history">
     </div>
         

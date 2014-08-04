@@ -1,36 +1,63 @@
 
-	#search{
+    .inputfield{
         position: absolute;
         left: 10%;
+        right: 10%;
         top: 30%;
         width: 80%;
-	}
-	#searchInput{
-        height: 10%;
-        width: 100%;
-		margin: 5px;
+        height: 35px;
+        margin: 5px;
 		padding: 5px 15px;
-		font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
 		font-size:14px;
 		border:1px solid #0076a3;
-		border-radius: 5px 5px;
+		border-radius: 4px 4px;
+    }
+
+    .hiddenToggle{
+        display:none;
+    }
+
+	#searchInput{
+        display:block;            
 	}
+
+    #filterInput{
+        display: block;
+        left: 25%;
+        width: 65%;
+    }
+
+    #categoryLabel{
+        display: block;
+        height: 23px;
+        left: 10%;
+        background-color: #E1FCF3;
+        width:13%;
+        text-align: center;
+        vertical-align: middle;
+        
+    }
 
     #buttons{
         position: absolute;
+        padding: 5px;
         left: 40%;
+        right: 10%;
         top: 40%;
-        width: 80%;
+        width: 50%;
         height:10%;
 	}
     
     #searchbutton{
+        margin: 5px;
         width: 80px;
         height: 40px;
         font-size:24px;
     }
 
     #resultsbutton{
+        margin: 5px;
         width: 100px;
         height: 40px;
         font-size:24px;
@@ -38,7 +65,7 @@
     
     #history{
         position: absolute;
-        top: 48%;
+        top: 50%;
         left: 10%;
         height: 50%;
         width: 80%;
@@ -56,7 +83,8 @@
     }
 
     #resetbutton{
-        position: absolute;
-        right: 5%;
-        top:43%;
+        margin: 5px;
+        width: 100px;
+        height: 40px;
+        font-size:24px;
     }
