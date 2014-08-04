@@ -1,9 +1,19 @@
-
-    .inputfield{
+    .hiddenToggle{
+        display:block;
         position: absolute;
         left: 10%;
         right: 10%;
-        top: 30%;
+        top: 20%;
+        width: 80%;
+        height: 35px;
+        margin: 5px;
+    }
+
+	.searchInput{
+        position: absolute;
+        left: 10%;
+        right: 10%;
+        top: 20%;
         width: 80%;
         height: 35px;
         margin: 5px;
@@ -12,31 +22,34 @@
 		font-size:14px;
 		border:1px solid #0076a3;
 		border-radius: 4px 4px;
-    }
-
-    .hiddenToggle{
-        display:none;
-    }
-
-	#searchInput{
         display:block;            
 	}
 
-    #filterInput{
+    .filterInput{
         display: block;
+        position: absolute;
+        border:1px solid #0076a3;
+		border-radius: 0px 4px 4px 0px;
+		padding: 5px 15px;
+        font-family: Arial, Helvetica, sans-serif;
+		font-size:14px;
+        width: 75%;
         left: 25%;
-        width: 65%;
+        height: inherit;
     }
 
     #categoryLabel{
         display: block;
-        height: 23px;
-        left: 10%;
+        position:absolute;
+        font-family: Arial, Helvetica, sans-serif;
+		font-size:14px;
+		border:1px solid #0076a3;
+		border-radius: 4px 4px;
         background-color: #E1FCF3;
-        width:13%;
+        width:30%;
+        height: 33px;
         text-align: center;
         vertical-align: middle;
-        
     }
 
     #buttons{

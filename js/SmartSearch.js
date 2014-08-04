@@ -12,7 +12,7 @@ function keyPress(){
         document.getElementById('searchButton').click();
     //on colon ":"
     }else if(event.keyCode == 186){
-        var filterName = document.getElementById("searchInput").value;
+        var filterName = $('.searchInput').val();
         $('#categoryLabel').html(filterName+' :');
         swapView();
         setSelect2(filterName);
@@ -23,10 +23,11 @@ function swapView(){
     //Show Filter View
     $('.hiddenToggle').css('display', 'block');
     //**TODO** add red/green filter color based on facetable filter
-    $('#filterInput').focus();
+    $('.filterInput').focus();
 }
 
 function setSelect2(filterName){
+    //**TODO** Replace this function with getFilterList(filterName)
     var filterList = [{text: filterName, children:[]}];
         for(i=0; i<Object.keys(taxonomy).length; i++){
             var catArray = {};
@@ -36,7 +37,7 @@ function setSelect2(filterName){
             filterList[0]["children"].push(catArray);
         }
     $(document).ready(function() {
-        $("#filterInput").select2({
+        $(".filterInput").select2({
             multiple: true,
             data: filterList,
             maximumSelectionSize: 1
@@ -47,7 +48,7 @@ function setSelect2(filterName){
 }
                                   
 function ClearFields() {
-     document.getElementById("searchInput").value = "";
+     document.getElementsByClassName("searchInput").value = "";
 }
 
 function reset() {
@@ -146,7 +147,7 @@ function goToFilterData() {
 }
 
 function goToKeyWordData() {
-    var searchInput = document.getElementById("searchInput").value;
+    var searchInput = document.getElementsByClassName("searchInput").value;
     
         //if search contains a filter, then separate filter and search values
         if(hasFilter(searchInput)){
