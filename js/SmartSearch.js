@@ -21,10 +21,14 @@ function keyPress(){
 }
 
 function swapView(){
-    //Show Filter View
-    $('.hiddenToggle').css('display', 'block');
+    if($('.hiddenToggle').css('display')=='none'){
+        //Show Filter View
+        $('.hiddenToggle').css('display', 'block');
+    }else{
+        //Close Filter View
+        $('.hiddenToggle').css('display', 'none');
+    }
     //**TODO** add red/green filter color based on facetable filter
-//    $('.filterInput').focus();
 }
 
 function setSelect2(filterName){
@@ -41,11 +45,11 @@ function setSelect2(filterName){
             filterList[0]["children"].push(filt_set);
         }
     $(document).ready(function() {
+//        $(".filterInput").select2('focus');
         $(".filterInput").select2({
             multiple: true,
-            data: filterList,
-            maximumSelectionSize: 1
-        }).on('change', function(e){
+            data: filterList})
+        .on('change', function(e){
             //e.value returns category ID of the selected --> put into URL
             updateFiltersURL(objName, e.val[0]);
         });
@@ -54,6 +58,7 @@ function setSelect2(filterName){
                                   
 function ClearFields() {
      $(".searchInput").val('');
+     $(".filterInput").select2("val", "");
 }
 
 function reset() {
@@ -92,14 +97,6 @@ function formatqInput(i) {
     return i;
 }
 
-//function hasFilter(input) {
-//    if(input.indexOf(":")>-1){
-//        return true;
-//    }else{
-//        return false;
-//    }
-//}
-
 function generateURL(fName, filterValue) {
 //    console.log(fName+' '+filterValue);
     if (filtersCount==0) {
@@ -125,11 +122,12 @@ function generateURL(fName, filterValue) {
 }
 
 function updateFiltersURL (objName, selectVal) { //for countries, take in countries etc. 
-//            var filterName = objName;
-//            var filterValue = selectVal;
     generateURL(objName, selectVal);
     filtersHistory[objName]+=1;
     filtersCount += 1;
+    $("#history").append('<div class="filterbox">'+eval(objName)[selectVal]+'</div>');
+    ClearFields();
+    swapView();
 }
 
 
