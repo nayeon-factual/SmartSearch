@@ -9,24 +9,39 @@
         <script type="text/javascript" src="resources/taxonomy.js"></script>
         <script type="text/javascript" src="resources/select2-3.5.1/select2.js"></script>
         <script type="text/javascript" src="js/SmartSearch.js"></script>
-        
-
     </head>
     
     <body>
-    
     <!-- General Input Search -->
-    <input class="searchInput" placeholder="Search (general - remove later)" onkeydown="keyPress();"/>
+    <input class="searchInput" placeholder="Search" onkeydown="keyPress();"/>
     <!-- Filters Input Search -->
     <div class="hiddenToggle">
         <div id="categoryLabel"></div>
-        <input type="hidden" class="filterInput" placeholder="Search (filter - remove later)" onkeydown="keyPress();"/>
+        <input type="hidden" class="filterInput" placeholder="Search" onkeydown="filterKeyPress();"/>
     </div>
         
         
+<!--
+    <script>
+    var facObj = [];
+    var getFacets = $.get('http://api.v3.factual.com/t/places/facets?select=country&q=starbucks&KEY=i9VTDsvooscG7eFQ6ycBX16gwAvLqOVUDv9u2dMh', function(data){
+        var countries = data.response.data.country;
+        var listCountries = Object.keys(countries);
+        facObj += listCountries;
+    })
+    getFacets.done(function (obj){
+        console.log(facObj);
+//        var facets = facetsJSON.responseJSON.response.data.country;
+//    facObj.push(obj.response.data.country);
+//    console.log(facObj);
+    });
+    </script>
+-->
+        
+
         
     <div id="buttons">
-        <input type="button" value="Add Filter" id="searchButton" onClick="goToData();"/>
+<!--        <input type="button" value="Add Filter" id="searchButton" onClick=""/>-->
         <input type="button" value="See Results" id="resultsButton" onClick="openURL();"/>
         <input type="button" value="Reset Filters" id="resetButton" onClick="reset();"/>
     </div>    

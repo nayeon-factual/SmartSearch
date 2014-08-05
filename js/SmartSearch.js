@@ -1,22 +1,81 @@
-var facetable = ["country", "region", "state", "province", "locality", "town", "city", "zipcode", "zip", "postcode", "postalcode", "category", "chain", "chain name"];
+//Table ID varies depending on desired data set
+var table_id = 'places-us';
+var key = 'i9VTDsvooscG7eFQ6ycBX16gwAvLqOVUDv9u2dMh';
+var URL = 'http://www.factual.com/data/t/'+table_id+'#';
 
-var filtersHistory = {country:0, region:0, locality:0, post_town:0, category_ids:0, chain_name:0};
+//Filters holds all appropriate details (label, searchable terms, history) on faceted filters
+// {name:{label:"Label", searchable:["name","label","synonyms"], history:["prevsearches"]}}
+var filters = {}; 
 var filtersCount = 0;
 var qHistory = [];
 
-var URL = "http://www.factual.com/data/t/places#";
+initializeFilters();
+
+function initializeFilters() {
+    var schemaCall = 'http://api.v3.factual.com/t/'+table_id+'/schema?KEY='+key;
+    $.getJSON(schemaCall).done(function (data){
+        var fieldsData = data.response.view.fields;
+        var stringifiedData = JSON.stringify(fieldsData);
+        for(i=0; i<fieldsData.length; i++){
+            if(fieldsData[i].faceted==true){
+                var fieldName = fieldsData[i].name.toString();
+                var fieldLabel = fieldsData[i].label.toString();
+                if(fieldName=="category_ids" || fieldName=="category_labels"){
+                    filters['category_ids']={};
+                    filters['category_ids'].label="Category";
+                    filters['category_ids'].searchable=["category", "category label", "category name"];
+                    //**TODO** depends on synonyms format
+                    filters["category_ids"].searchable.push(findSearchableSyn("category"));
+                    filters["category_ids"]['history']=[];
+                }else{
+                    filters[fieldName]={};
+                    filters[fieldName].label=fieldLabel;
+                    filters[fieldName].searchable=[];
+                    filters[fieldName].searchable.push(fieldName);
+                    filters[fieldName].searchable.push(fieldLabel);
+                    filters[fieldName].searchable.push(findSearchableSyn(fieldName));
+                    filters[fieldName].history=[];
+                }
+            }
+        }
+    }); //wait to return searchable
+}
+
+function findSearchableSyn(word){
+//    for(word in searchable){
+//        //**TODO** synonyms should be a js object mapping words to their synonyms
+//    }
+}
+//returns "'syn', 'syn', 'syn'"
 
 function keyPress(){
-    //on enter
+    //on Enter
     if (event.keyCode == 13) {
         updateqURL();
     //on colon ":"
     }else if(event.keyCode == 186){
         var filterName = $('.searchInput').val();
-        //**TODO** make sure filterName is a valid filter Name. 
-        $('#categoryLabel').html(filterName+' :');
-        swapView();
-        setSelect2(filterName);
+        if(isSearchable(filterName)){
+            $('#categoryLabel').html(filterName+' :');
+            swapView();
+            setSelect2Data(filterName);
+        }else{
+            ClearFields();
+            alert("Invalid Filter Name!");
+        }
+        var stdFilterName = categorize(filterName);
+        //Check if valid filter name
+        
+    }
+}
+
+function isSearchable(filterName){
+    for(s=0; s<Object.keys(searchable).length; s++){
+        if(filterName in searchable[s]){
+            return true;
+        }else{
+            return false;
+        }
     }
 }
 
@@ -24,36 +83,13 @@ function swapView(){
     if($('.hiddenToggle').css('display')=='none'){
         //Show Filter View
         $('.hiddenToggle').css('display', 'block');
+        $('.searchInput').css('display', 'none');
     }else{
         //Close Filter View
         $('.hiddenToggle').css('display', 'none');
+        $('.searchInput').css('display', 'block');
     }
     //**TODO** add red/green filter color based on facetable filter
-}
-
-function setSelect2(filterName){
-    var objName = categorize(filterName);
-    var obj = eval(objName);
-    var objKeys = Object.keys(obj);
-    
-    var filterList = [{text: filterName, children:[]}];
-        for(i=0; i<objKeys.length; i++){
-            var filt_set = {};
-            var filt_ID = objKeys[i];
-            filt_set["id"] = filt_ID;
-            filt_set["text"] = obj[filt_ID];
-            filterList[0]["children"].push(filt_set);
-        }
-    $(document).ready(function() {
-//        $(".filterInput").select2('focus');
-        $(".filterInput").select2({
-            multiple: true,
-            data: filterList})
-        .on('change', function(e){
-            //e.value returns category ID of the selected --> put into URL
-            updateFiltersURL(objName, e.val[0]);
-        });
-});
 }
                                   
 function ClearFields() {
@@ -62,78 +98,18 @@ function ClearFields() {
 }
 
 function reset() {
-    URL = "http://www.factual.com/data/t/places#";
+    URL = 'http://www.factual.com/data/t/'+table_id+'#';
     $("#history").empty();
-    filtersHistory = {country:0, region:0, locality:0, post_town:0, category_id:0, chain_name:0};
+    filtersHistory = {country:0, region:0, locality:0, post_town:0, category_id:0, chain_name:0};//**TODO** make function to empty all arrays
     filtersCount = 0;
     qHistory = [];
-}
-
-function categorize(filterName) {
-    if(filterName == "state" || filterName == "province"){
-        filterName = "region";
-    }else if(filterName == "city" || filterName == "town"){
-        filterName = "locality";
-    }else if(filterName == "chain" || filterName == "chain name") {
-        filterName = "chain_name";
-    }else if(filterName == "category") {
-        filterName = "category_ids";
-    }else if(filterName == "zipcode" || filterName == "zip" || filterName == "postcode" || filterName == "postalcode"){
-        filterName = "post_town";   
-    }
-    return filterName;
-}
-
-function formatNewFilterInput(filter, input) {
-    input = input.split(' ').join('+');
-    filter = '"'+filter+'"'; 
-    input = '"'+input+'"';
-    return '{'+filter+':{"$eq":'+input+'}}';
-}
-
-function formatqInput(i) {
-    i = i.split(' ').join('+');
-    i = '"'+i+'"';
-    return i;
-}
-
-function generateURL(fName, filterValue) {
-//    console.log(fName+' '+filterValue);
-    if (filtersCount==0) {
-        firstInput = formatNewFilterInput(fName, filterValue);
-        //check if there is already a keyword filter  
-        if(qHistory.length==0){
-            URL = URL+'filters={"$and":['+firstInput+']}';
-        }else{
-            URL = URL+'&filters={"$and":['+firstInput+']}';
-        }
-
-    } else if (filtersHistory[fName]==0) {
-        newFilterInput = formatNewFilterInput(fName, filterValue);
-        URL = URL.slice(0, URL.indexOf('filters={"$and":[')+17)+newFilterInput+','+URL.slice(URL.indexOf('filters={"$and":[')+17); 
-
-    } else if (filtersHistory[fName]>0) {
-        filterValue = filterValue.split(' ').join('+');
-        URL = URL.split('"'+fName+'":{"$eq"').join('"'+fName+'":{"$in"');
-        var firstIndex = URL.indexOf(fName+'":{"$in":')+fName.length+9;
-        var closingBraceIndex = URL.slice(firstIndex).indexOf("}}")
-        URL = URL.slice(0, firstIndex) + '["' + filterValue + '", ' + URL.slice(firstIndex).slice(0,closingBraceIndex) +']'+ URL.slice(firstIndex).slice(closingBraceIndex);
+    if($('.hiddenToggle').css('display')=='block'){
+        swapView();
     }
 }
-
-function updateFiltersURL (objName, selectVal) { //for countries, take in countries etc. 
-    generateURL(objName, selectVal);
-    filtersHistory[objName]+=1;
-    filtersCount += 1;
-    $("#history").append('<div class="filterbox">'+eval(objName)[selectVal]+'</div>');
-    ClearFields();
-    swapView();
-}
-
 
 function updateqURL() {
     var searchInput = $('.searchInput').val();
-        
     qInput = formatqInput(searchInput);
         if(qHistory.length==0 && filtersCount==0){
             URL = URL+'q='+qInput;
@@ -143,10 +119,16 @@ function updateqURL() {
             URL = URL.slice(0, URL.indexOf("q=")+2)+qInput+','+URL.slice(URL.indexOf("q=")+2);
         }
         //Add to Keywords History
-        qHistory.push(qInput);
+        qHistory.push(qInput); //**TODO** push qInput or searchInput? (what does facets call take)
         $("#history").append('<div class="filterbox">'+searchInput+'</div>');
         ClearFields();
-        }
+}
+
+function formatqInput(i) {
+    i = i.split(' ').join('+');
+    i = '"'+i+'"';
+    return i;
+}
 
 function openURL() {
     window.open(URL);
