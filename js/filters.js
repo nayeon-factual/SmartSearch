@@ -18,6 +18,7 @@ function updateFacetsAPI(filterKey){
             facetsAPI.concat(qHistory[q]+', ');
         }
         facetsAPI = facetsAPI.substring(0, facetsAPI.length -2);
+        
     }if(filtersCount>0){
         facetsAPI.concat('&filters=');
         for(key in Object.keys(filters)){
@@ -26,6 +27,7 @@ function updateFacetsAPI(filterKey){
             }
         }
     }
+    console.log(facetsAPI);
     return facetsAPI;
 }
 

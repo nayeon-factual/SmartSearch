@@ -1,5 +1,5 @@
 //Table ID varies depending on desired data set
-var table_id = 'places-us';
+var table_id = 'places';
 var key = 'i9VTDsvooscG7eFQ6ycBX16gwAvLqOVUDv9u2dMh';
 var URL = 'http://www.factual.com/data/t/'+table_id+'#';
 
@@ -38,7 +38,7 @@ function initializeFilters() {
                 }
             }
         }
-    }); //wait to return searchable
+    }); //wait to return filters
 }
 
 function findSearchableSyn(word){
@@ -48,9 +48,11 @@ function findSearchableSyn(word){
 }//returns "'syn', 'syn', 'syn'"
 
 function keyPress(){
+    
     //on Enter
     if (event.keyCode == 13) {
         updateqURL();
+        console.log(filters);
     //on colon ":"
     }else if(event.keyCode == 186){
         var filterName = $('.searchInput').val();
@@ -67,19 +69,22 @@ function keyPress(){
 }
 
 function isSearchable(filterName){
-    for(key in Object.keys(filters)) {
-        if(filterName in filters[key].searchable){
-            return true;
-        }else{
-            return false;
+    var filterKeys = Object.keys(filters);
+    var searchableBool = false;
+    for(k=0; k <filterKeys.length; k++) {
+        var filterKey = filterKeys[k].toString();
+        if(filters[filterKey].searchable.indexOf(filterName)>-1){
+            searchableBool = true;
         }
     }
+    return searchableBool;
 }
 
 function getFilterName(filterName){
-    for(key in Object.keys(filters)) {
-        if(filterName in filters[key].searchable){
-            return key;
+    for(k=0; k <Object.keys(filters).length; k++) {
+        var filterKey = Object.keys(filters)[k].toString();
+        if(filters[filterKey].searchable.indexOf(filterName)>-1){
+            return filterKey;
         }
     }
 }
