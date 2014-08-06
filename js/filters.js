@@ -4,7 +4,8 @@ function setSelect2Data(filterKey){
     $.get(updateFacetsAPI(filterKey)).done(function (obj){
         var facetsObject = obj.response.data.select; //object of facets and counts
         var facetsKeys = Object.keys(facetsKeys);
-        formatSelect2Data(facetsKeys, filterKey);
+        var S2Data = formatSelect2Data(facetsKeys, filterKey);
+        setSelect2(S2Data);
     }); //wait to return facetsObject
 }
 
@@ -45,38 +46,29 @@ function formatSelect2Data(facetsObj, filterKey){//takes array of facets ['us', 
     return sel2Data;
 }
 
-function setSelect2(filterName){
-    var objName = categorize(filterName);
-    var obj = eval(objName);
-    var objKeys = Object.keys(obj);
-    
-    var filterList = [{text: filterName, children:[]}];
-        for(i=0; i<objKeys.length; i++){
-            var filt_set = {};
-            var filt_ID = objKeys[i];
-            filt_set["id"] = filt_ID;
-            filt_set["text"] = obj[filt_ID];
-            filterList[0]["children"].push(filt_set);
-        }
+function setSelect2(s2data){
     $(document).ready(function() {
 //        $(".filterInput").select2('focus');
         $(".filterInput").select2({
             multiple: true,
-            data: filterList})
+            data: s2data})
         .on('change', function(e){
-            //e.value returns category ID of the selected --> put into URL
+            //e.value returns value of the selected --> put into URL
             updateFiltersURL(objName, e.val[0]);
         });
-});
+    });
 }
 
-
-
-
-
+function updateFiltersURL (objName, selectVal) { //for countries, take in countries etc. 
+    generateURL(objName, selectVal);
+    filtersHistory[objName]+=1;
+    filtersCount ++;
+    $("#history").append('<div class="filterbox">'+eval(objName)[selectVal]+'</div>');
+    ClearFields();
+    swapView();
+}
 
 function generateURL(fName, filterValue) {
-//    console.log(fName+' '+filterValue);
     if (filtersCount==0) {
         firstInput = formatNewFilterInput(fName, filterValue);
         //check if there is already a keyword filter  
@@ -98,31 +90,6 @@ function generateURL(fName, filterValue) {
         URL = URL.slice(0, firstIndex) + '["' + filterValue + '", ' + URL.slice(firstIndex).slice(0,closingBraceIndex) +']'+ URL.slice(firstIndex).slice(closingBraceIndex);
     }
 }
-
-function updateFiltersURL (objName, selectVal) { //for countries, take in countries etc. 
-    console.log("called");
-    generateURL(objName, selectVal);
-    filtersHistory[objName]+=1;
-    filtersCount ++;
-    $("#history").append('<div class="filterbox">'+eval(objName)[selectVal]+'</div>');
-    ClearFields();
-    swapView();
-}
-
-//function categorize(filterName) {
-//    if(filterName == "state" || filterName == "province"){
-//        filterName = "region";
-//    }else if(filterName == "city" || filterName == "town"){
-//        filterName = "locality";
-//    }else if(filterName == "chain" || filterName == "chain name") {
-//        filterName = "chain_name";
-//    }else if(filterName == "category") {
-//        filterName = "category_ids";
-//    }else if(filterName == "zipcode" || filterName == "zip" || filterName == "postcode" || filterName == "postalcode"){
-//        filterName = "post_town";   
-//    }
-//    return filterName;
-//}
 
 function formatNewFilterInput(filter, input) {
     input = input.split(' ').join('+');
