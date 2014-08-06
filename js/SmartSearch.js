@@ -61,11 +61,22 @@ function keyPress(){
             swapView();
             var filterKey = getFilterName(filterName);
             setSelect2Data(filterKey);
+            filterKeyPress(filterKey);
         }else{
             ClearFields();
             alert("Invalid Filter Name!");
         }
     }
+}
+
+function filterKeyPress(filterKey){
+    $('.filterInput').keypress(function(event){
+        //on Enter
+        if (event.keyCode == 13) {
+        updateFiltersURL(filterKey);
+        }
+    })
+
 }
 
 function isSearchable(filterName){

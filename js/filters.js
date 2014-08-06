@@ -1,11 +1,11 @@
 //take in current filterName and sets appropriate select2 data to filterInput field
 function setSelect2Data(filterKey){
     var facetsObject = [];
-    $.get(updateFacetsAPI(filterKey)).done(function (obj){
+    $.get(updateFacetsAPI(filterKey)).done(function (obj){//**TODO** updateFacetsAPI still not working for filters
         var facetsObject = obj.response.data.country; //object of facets and counts
         var facetsKeys = Object.keys(facetsObject);
         console.log('facobj'+JSON.stringify(facetsKeys));
-        var S2Data = formatSelect2Data(facetsKeys, filterKey);
+        var S2Data = formatSelect2Data(facetsKeys, filterKey);//**TODO**
         setSelect2(S2Data);
     }); //wait to return facetsObject
 }
@@ -23,15 +23,36 @@ function updateFacetsAPI(filterKey){
         
     }if(filtersCount > 0){
         facetsAPI+='&filters=';
-        for(key in Object.keys(filters)){
-            if(filters[key].history.length>0){
-                formatFilters();//**TODO**
+        for(f=0; f<Object.keys(filters).length; f++){
+            var currentFilterKey = Object.keys(filters)[f];
+            if(filters[currentFilterKey].history.length>0){
+                var formattedFilters = formatExistingFilters();//**TODO** formatExistingFilters vs formatNewFilters
             }
         }
     }
-    
     return facetsAPI;
 }
+
+function formatExistingFilters(){
+    var formatted = '{"$and":['
+    if (filtersCount==0) { //{'country':{'$eq':['US']}}
+        firstInput = formatNewFilterInput(filter, filterValue);
+
+    } else if (filtersHistory[fName]==0) { //{'chain_name':{'$eq':['subway']}},{'country':{'$eq':['US']}}]}
+        newFilterInput = formatNewFilterInput(fName, filterValue);
+        URL = URL.slice(0, URL.indexOf('filters={"$and":[')+17)+newFilterInput+','+URL.slice(URL.indexOf('filters={"$and":[')+17); 
+
+    } else if (filtersHistory[fName]>0) {//{'$and':[{'country':{'$in':['US']}}]}
+        filterValue = filterValue.split(' ').join('+');
+        URL = URL.split('"'+fName+'":{"$eq"').join('"'+fName+'":{"$in"');
+        var firstIndex = URL.indexOf(fName+'":{"$in":')+fName.length+9;
+        var closingBraceIndex = URL.slice(firstIndex).indexOf("}}")
+        URL = URL.slice(0, firstIndex) + '["' + filterValue + '", ' + URL.slice(firstIndex).slice(0,closingBraceIndex) +']'+ URL.slice(firstIndex).slice(closingBraceIndex);
+    }
+    formatted += ']}'
+    return formatted;
+} //return{'$and':[{'country':{'$in':['US','GB']}}]}
+
 
 //returns correctly formatted data for select2
 function formatSelect2Data(facetsObj, filterKey){//takes array of facets ['us', 'gb',...]
@@ -63,30 +84,31 @@ function setSelect2(s2data){
     });
 }
 
-function updateFiltersURL (objName, selectVal) { //for countries, take in countries etc. 
-    generateURL(objName, selectVal);
-    filtersHistory[objName]+=1;
-    filtersCount ++;
+function updateFiltersURL (filter) { //for countries, take in 'country' etc.
+    var filterVal = $('.filterInput').val();
+    generateURL(filter, filterVal);//generateURL("country", "US") or generateURL("category_ids", "Automotive")
+    filtersCount++;
+    filtersHistory[objName]+=1;//**TODO** no longer formatted this way. add to history key in array
     $("#history").append('<div class="filterbox">'+eval(objName)[selectVal]+'</div>');
-    ClearFields();
-    swapView();
+//    ClearFields();
+//    swapView();
 }
 
-function generateURL(fName, filterValue) {
+function generateURL(filter, filterValue) {
+    //**TODO** need separate handler for category - if filter is category, parse filter adn filterValue to make sure it's in "category_id" and "123" form.("category"->"ids", "Automotive"->"2")
     if (filtersCount==0) {
-        firstInput = formatNewFilterInput(fName, filterValue);
-        //check if there is already a keyword filter  
+    var firstInput = formatNewFilterInput(filter, filterValue);
         if(qHistory.length==0){
-            URL = URL+'filters={"$and":['+firstInput+']}';
+        URL = URL+'filters={"$and":['+firstInput+']}';
         }else{
-            URL = URL+'&filters={"$and":['+firstInput+']}';
+        URL = URL+'&filters={"$and":['+firstInput+']}';
         }
-
-    } else if (filtersHistory[fName]==0) {
-        newFilterInput = formatNewFilterInput(fName, filterValue);
+        
+    } else if (filters[filter].history.length==0) {
+        newFilterInput = formatNewFilterInput(filter, filterValue);
         URL = URL.slice(0, URL.indexOf('filters={"$and":[')+17)+newFilterInput+','+URL.slice(URL.indexOf('filters={"$and":[')+17); 
-
-    } else if (filtersHistory[fName]>0) {
+    
+    } else if (filters[filter].history.length>0) {
         filterValue = filterValue.split(' ').join('+');
         URL = URL.split('"'+fName+'":{"$eq"').join('"'+fName+'":{"$in"');
         var firstIndex = URL.indexOf(fName+'":{"$in":')+fName.length+9;
