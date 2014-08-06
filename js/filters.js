@@ -1,3 +1,6 @@
+//**TODO** put valid history term in filters[key].history after populating history div
+
+
 //take in current filterName and sets appropriate select2 data to filterInput field
 function setSelect2Data(filterKey){
     var facetsObject = [];
@@ -22,36 +25,34 @@ function updateFacetsAPI(filterKey){
         facetsAPI = facetsAPI.substring(0, facetsAPI.length -2);
         
     }if(filtersCount > 0){
-        facetsAPI+='&filters=';
-        for(f=0; f<Object.keys(filters).length; f++){
-            var currentFilterKey = Object.keys(filters)[f];
-            if(filters[currentFilterKey].history.length>0){
-                var formattedFilters = formatExistingFilters();//**TODO** formatExistingFilters vs formatNewFilters
-            }
-        }
+        var formattedFilters = formatExistingFilters();
+        facetsAPI+='&filters='+formattedFilters;
     }
     return facetsAPI;
 }
 
 function formatExistingFilters(){
     var formatted = '{"$and":['
-    if (filtersCount==0) { //{'country':{'$eq':['US']}}
-        firstInput = formatNewFilterInput(filter, filterValue);
-
-    } else if (filtersHistory[fName]==0) { //{'chain_name':{'$eq':['subway']}},{'country':{'$eq':['US']}}]}
-        newFilterInput = formatNewFilterInput(fName, filterValue);
-        URL = URL.slice(0, URL.indexOf('filters={"$and":[')+17)+newFilterInput+','+URL.slice(URL.indexOf('filters={"$and":[')+17); 
-
-    } else if (filtersHistory[fName]>0) {//{'$and':[{'country':{'$in':['US']}}]}
-        filterValue = filterValue.split(' ').join('+');
-        URL = URL.split('"'+fName+'":{"$eq"').join('"'+fName+'":{"$in"');
-        var firstIndex = URL.indexOf(fName+'":{"$in":')+fName.length+9;
-        var closingBraceIndex = URL.slice(firstIndex).indexOf("}}")
-        URL = URL.slice(0, firstIndex) + '["' + filterValue + '", ' + URL.slice(firstIndex).slice(0,closingBraceIndex) +']'+ URL.slice(firstIndex).slice(closingBraceIndex);
+    var formattedNum = 0;
+    
+    for(f=0; f<Object.keys(filters).length; f++){
+        if(formattedNum>0){
+            formatted+=', ';
+        }
+        var currentFilterKey = Object.keys(filters)[f];
+        if(filters[currentFilterKey].history.length==1){ 
+            formatted+='{"'+currentFilterKey+'":{"$eq":"'+filters[currentFilterKey].history[0]+'"}}';
+            formattedNum++;
+        }else if(filters[currentFilterKey].history.length > 1){
+            var historyString = filters[currentFilterKey].history.toString();
+            var historyArray = historyString.split(',').join('","');
+            formatted+='{"'+currentFilterKey+'":{"$in":["'+historyArray+'"]}}';
+            formattedNum++;
+        }
     }
     formatted += ']}'
     return formatted;
-} //return{'$and':[{'country':{'$in':['US','GB']}}]}
+}
 
 
 //returns correctly formatted data for select2
