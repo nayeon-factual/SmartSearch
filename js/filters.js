@@ -5,7 +5,7 @@
 function setSelect2Data(filterKey){
     var facetsObject = [];
     $.get(updateFacetsAPI(filterKey)).done(function (obj){
-        var facetsObject = obj.response.data.country;
+        var facetsObject = obj.response.data[filterKey];
         var facetsKeys = Object.keys(facetsObject); //['us','cn','fr',....]
         console.log('facobj'+JSON.stringify(facetsKeys));
         var S2Data = formatSelect2Data(filterKey, facetsKeys);//**TODO**
@@ -62,12 +62,12 @@ function formatSelect2Data(filterKey, facetsArray){
     }else{ //default behavior
         var filterLabel = filters[filterKey].label;
         var sel2Data = [{text: filterLabel, children:[]}]; //takes array of facets ['us', 'gb',...] & filterName or select
-        for(i=0; i<obj.length; i++){
+        for(i=0; i<facetsArray.length; i++){
             var filt_set = {};
-            var filt_ID = objKeys[i];
-            filt_set["id"] = filt_ID;
-            filt_set["text"] = obj[filt_ID];
-            filterList[0]["children"].push(filt_set);
+            var option = facetsArray[i];
+            filt_set["id"] = option;
+            filt_set["text"] = option;
+            sel2Data[0]["children"].push(filt_set);
         }
     }
     return sel2Data;
@@ -80,8 +80,9 @@ function setSelect2(s2data){
             multiple: true,
             data: s2data})
         .on('change', function(e){
+            console.log('onchange'+e.val);
             //e.value returns value of the selected --> put into URL
-            updateFiltersURL(objName, e.val[0]);
+//            updateFiltersURL(objName, e.val[0]);
         });
     });
 }
