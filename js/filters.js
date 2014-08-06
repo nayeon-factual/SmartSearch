@@ -4,11 +4,11 @@
 //take in current filterName and sets appropriate select2 data to filterInput field
 function setSelect2Data(filterKey){
     var facetsObject = [];
-    $.get(updateFacetsAPI(filterKey)).done(function (obj){//**TODO** updateFacetsAPI still not working for filters
-        var facetsObject = obj.response.data.country; //object of facets and counts
-        var facetsKeys = Object.keys(facetsObject);
+    $.get(updateFacetsAPI(filterKey)).done(function (obj){
+        var facetsObject = obj.response.data.country;
+        var facetsKeys = Object.keys(facetsObject); //['us','cn','fr',....]
         console.log('facobj'+JSON.stringify(facetsKeys));
-        var S2Data = formatSelect2Data(facetsKeys, filterKey);//**TODO**
+        var S2Data = formatSelect2Data(filterKey, facetsKeys);//**TODO**
         setSelect2(S2Data);
     }); //wait to return facetsObject
 }
@@ -28,6 +28,7 @@ function updateFacetsAPI(filterKey){
         var formattedFilters = formatExistingFilters();
         facetsAPI+='&filters='+formattedFilters;
     }
+    console.log('facetsAPI '+facetsAPI);
     return facetsAPI;
 }
 
@@ -54,13 +55,13 @@ function formatExistingFilters(){
     return formatted;
 }
 
-
 //returns correctly formatted data for select2
-function formatSelect2Data(facetsObj, filterKey){//takes array of facets ['us', 'gb',...]
+function formatSelect2Data(filterKey, facetsArray){
     if(filterKey=='category_ids'){//obj = [12,145,213]
         //**TODO** implement override
     }else{ //default behavior
-        var sel2Data = [{text: filterName, children:[]}]; //filterName or select
+        var filterLabel = filters[filterKey].label;
+        var sel2Data = [{text: filterLabel, children:[]}]; //takes array of facets ['us', 'gb',...] & filterName or select
         for(i=0; i<obj.length; i++){
             var filt_set = {};
             var filt_ID = objKeys[i];
