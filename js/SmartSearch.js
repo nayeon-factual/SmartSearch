@@ -45,8 +45,7 @@ function findSearchableSyn(word){
 //    for(word in searchable){
 //        //**TODO** synonyms should be a js object mapping words to their synonyms
 //    }
-}
-//returns "'syn', 'syn', 'syn'"
+}//returns "'syn', 'syn', 'syn'"
 
 function keyPress(){
     //on Enter
@@ -56,25 +55,31 @@ function keyPress(){
     }else if(event.keyCode == 186){
         var filterName = $('.searchInput').val();
         if(isSearchable(filterName)){
-            $('#categoryLabel').html(filterName+' :');
+            $('#categoryLabel').html(filterName+' :');//tolowercase?
             swapView();
-            setSelect2Data(filterName);
+            var filterKey = getFilterName(filterName);
+            setSelect2Data(filterKey);
         }else{
             ClearFields();
             alert("Invalid Filter Name!");
         }
-        var stdFilterName = categorize(filterName);
-        //Check if valid filter name
-        
     }
 }
 
 function isSearchable(filterName){
-    for(s=0; s<Object.keys(searchable).length; s++){
-        if(filterName in searchable[s]){
+    for(key in Object.keys(filters)) {
+        if(filterName in filters[key].searchable){
             return true;
         }else{
             return false;
+        }
+    }
+}
+
+function getFilterName(filterName){
+    for(key in Object.keys(filters)) {
+        if(filterName in filters[key].searchable){
+            return key;
         }
     }
 }

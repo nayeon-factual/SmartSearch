@@ -1,24 +1,36 @@
-function updateFacetsAPI(select, qHistory, filtersHistory){//select = (str, field you want to get facets list of) && currentFilters = array of filters that are currently 
-    var facetsAPI = 'http://api.v3.factual.com/t/'+table_id+'/facets?select='+select+'&q='+qSearch+'&filters='+filterSearch+'&limit=50&KEY='+key+';
+//take in current filterName and sets appropriate select2 data to filterInput field
+function setSelect2Data(filterKey){
+    var facetsObject = [];
+    $.get(updateFacetsAPI(filterKey)).done(function (obj){
+        var facetsObject = obj.response.data.select; //object of facets and counts
+        var facetsKeys = Object.keys(facetsKeys);
+        formatSelect2Data(facetsKeys, filterKey);
+    }); //wait to return facetsObject
+}
+
+function updateFacetsAPI(filterKey){
+    var facetsAPI = 'http://api.v3.factual.com/t/'+table_id+'/facets?select='+filterKey+'&limit=50&KEY='+key;
     //can't push limit higher than 50 - yes, try a couple hundred
-    //qSearch is str 'starbucks,dunkin'
-    //filterSearch is {filterName:filterValue},{more etc}
+    if(qHistory.length>0){
+        facetsAPI.concat('&q=');
+        for(q=0; q < qHistory.length; q++){
+            facetsAPI.concat(qHistory[q]+', ');
+        }
+        facetsAPI = facetsAPI.substring(0, facetsAPI.length -2);
+    }if(filtersCount>0){
+        facetsAPI.concat('&filters=');
+        for(key in Object.keys(filters)){
+            if(filters[key].history.length>0){
+                formatFilters();//**TODO**
+            }
+        }
+    }
     return facetsAPI;
 }
 
-//take in current filterName and sets appropriate select2 data to filterInput field
-function setSelect2Data(select){
-    var facetsObject = [];
-    $.get(updateFacetsAPI).done(function (obj){
-        var facetsObject = obj.response.data.select; //object of facets and counts
-        var facetsKeys = Object.keys(facetsKeys);
-        formatSelect2Data(facetsKeys);
-    }); //wait to return facetsObject
-    
-}
-
-function formatSelect2Data(obj){//takes array of facets ['us', 'gb',...]
-    if(select=='category_ids'){//obj = [12,145,213]
+//returns correctly formatted data for select2
+function formatSelect2Data(facetsObj, filterKey){//takes array of facets ['us', 'gb',...]
+    if(filterKey=='category_ids'){//obj = [12,145,213]
         //**TODO** implement override
     }else{ //default behavior
         var sel2Data = [{text: filterName, children:[]}]; //filterName or select
@@ -30,6 +42,7 @@ function formatSelect2Data(obj){//takes array of facets ['us', 'gb',...]
             filterList[0]["children"].push(filt_set);
         }
     }
+    return sel2Data;
 }
 
 function setSelect2(filterName){
@@ -56,6 +69,11 @@ function setSelect2(filterName){
         });
 });
 }
+
+
+
+
+
 
 function generateURL(fName, filterValue) {
 //    console.log(fName+' '+filterValue);
@@ -91,20 +109,20 @@ function updateFiltersURL (objName, selectVal) { //for countries, take in countr
     swapView();
 }
 
-function categorize(filterName) {
-    if(filterName == "state" || filterName == "province"){
-        filterName = "region";
-    }else if(filterName == "city" || filterName == "town"){
-        filterName = "locality";
-    }else if(filterName == "chain" || filterName == "chain name") {
-        filterName = "chain_name";
-    }else if(filterName == "category") {
-        filterName = "category_ids";
-    }else if(filterName == "zipcode" || filterName == "zip" || filterName == "postcode" || filterName == "postalcode"){
-        filterName = "post_town";   
-    }
-    return filterName;
-}
+//function categorize(filterName) {
+//    if(filterName == "state" || filterName == "province"){
+//        filterName = "region";
+//    }else if(filterName == "city" || filterName == "town"){
+//        filterName = "locality";
+//    }else if(filterName == "chain" || filterName == "chain name") {
+//        filterName = "chain_name";
+//    }else if(filterName == "category") {
+//        filterName = "category_ids";
+//    }else if(filterName == "zipcode" || filterName == "zip" || filterName == "postcode" || filterName == "postalcode"){
+//        filterName = "post_town";   
+//    }
+//    return filterName;
+//}
 
 function formatNewFilterInput(filter, input) {
     input = input.split(' ').join('+');
