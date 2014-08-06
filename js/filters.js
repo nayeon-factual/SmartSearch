@@ -2,8 +2,9 @@
 function setSelect2Data(filterKey){
     var facetsObject = [];
     $.get(updateFacetsAPI(filterKey)).done(function (obj){
-        var facetsObject = obj.response.data.select; //object of facets and counts
-        var facetsKeys = Object.keys(facetsKeys);
+        var facetsObject = obj.response.data.country; //object of facets and counts
+        var facetsKeys = Object.keys(facetsObject);
+        console.log('facobj'+JSON.stringify(facetsKeys));
         var S2Data = formatSelect2Data(facetsKeys, filterKey);
         setSelect2(S2Data);
     }); //wait to return facetsObject
@@ -12,22 +13,23 @@ function setSelect2Data(filterKey){
 function updateFacetsAPI(filterKey){
     var facetsAPI = 'http://api.v3.factual.com/t/'+table_id+'/facets?select='+filterKey+'&limit=50&KEY='+key;
     //can't push limit higher than 50 - yes, try a couple hundred
-    if(qHistory.length>0){
-        facetsAPI.concat('&q=');
+    
+    if(qHistory.length > 0){
+        facetsAPI +='&q=';
         for(q=0; q < qHistory.length; q++){
-            facetsAPI.concat(qHistory[q]+', ');
+            facetsAPI+=qHistory[q]+', ';
         }
         facetsAPI = facetsAPI.substring(0, facetsAPI.length -2);
         
-    }if(filtersCount>0){
-        facetsAPI.concat('&filters=');
+    }if(filtersCount > 0){
+        facetsAPI+='&filters=';
         for(key in Object.keys(filters)){
             if(filters[key].history.length>0){
                 formatFilters();//**TODO**
             }
         }
     }
-    console.log(facetsAPI);
+    
     return facetsAPI;
 }
 

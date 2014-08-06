@@ -52,7 +52,7 @@ function keyPress(){
     //on Enter
     if (event.keyCode == 13) {
         updateqURL();
-        console.log(filters);
+//        console.log(filters);
     //on colon ":"
     }else if(event.keyCode == 186){
         var filterName = $('.searchInput').val();
