@@ -1,6 +1,7 @@
 //**TODO** do not show dropdown until new facets call has been completed
 //**TODO** make undo button in case chose wrong filter by mistake. (swapview)
 //**TODO** how bad is the update select2data delay
+//**TODO** handling capitalization things: updated history should look more refined, inputs can be in upper or lower cases
 
 //take in current filterName and sets appropriate select2 data to filterInput field
 function setSelect2Data(){
@@ -75,7 +76,6 @@ function formatSelect2Data(facetsArray){
             sel2Data[0]["children"].push(filt_set);
         }
     }
-    console.log(sel2Data);
     return sel2Data;
 }
 
@@ -96,14 +96,21 @@ function updateFiltersURL (filterVal) {
     generateURL(filterVal);
     filtersCount++;
     filters[filterKey].history.push(filterVal);
-    $("#history").append('<div class="filterbox">'+filterKey+': '+filterVal+'</div>');
+    updateHistory(filterVal);
     filterKey="";
     ClearFields();
     swapView();
 }
 
+function updateHistory(filterVal) {
+    if(filterKey=="category_ids"){
+        $("#history").append('<div class="filterbox"> Category: '+category_ids[filterVal]+'</div>');
+    }else{
+        $("#history").append('<div class="filterbox">'+filterKey+': '+filterVal+'</div>');
+    }
+}
+
 function generateURL(filterValue) {
-    //**TODO** need separate handler for category - if filter is category, parse filter adn filterValue to make sure it's in "category_id" and "123" form.("category"->"ids", "Automotive"->"2")
     if (filtersCount==0) {
     var firstInput = formatNewFilterInput(filterKey, filterValue);
         if(qHistory.length==0){

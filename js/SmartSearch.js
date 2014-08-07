@@ -26,9 +26,8 @@ function initializeFilters() {
                 if(fieldName=="category_ids" || fieldName=="category_labels"){
                     filters['category_ids']={};
                     filters['category_ids'].label="Category";
-                    filters['category_ids'].searchable=["category", "category label", "category name"];
-                    //**TODO** depends on synonyms format
-                    filters["category_ids"].searchable.push(findSearchableSyn("category"));
+                    filters['category_ids'].searchable=["category_ids", "category_labels", "Category"];//adding name and label
+                    addSearchableSyns('category_ids');
                     filters["category_ids"]['history']=[];
                 }else{
                     filters[fieldName]={};
@@ -36,7 +35,7 @@ function initializeFilters() {
                     filters[fieldName].searchable=[];
                     filters[fieldName].searchable.push(fieldName);
                     filters[fieldName].searchable.push(fieldLabel);
-                    filters[fieldName].searchable.push(findSearchableSyn(fieldName));
+                    addSearchableSyns(fieldName);
                     filters[fieldName].history=[];
                 }
             }
@@ -44,17 +43,19 @@ function initializeFilters() {
     }); //wait to return filters
 }
 
-function findSearchableSyn(word){
-//    for(word in searchable){
-//        //**TODO** synonyms should be a js object mapping words to their synonyms
-//    }
-}//returns "'syn', 'syn', 'syn'"
+function addSearchableSyns(word){
+    var synArray = synonyms[table_id][word];
+    for(a=0; a<synArray.length; a++){
+        var syn = synArray[a];
+        filters[word].searchable.push(syn);
+    }
+}
 
 function keyPress(){
+    console.log(filters);
     //on Enter
     if (event.keyCode == 13) {
         updateqURL();
-//        console.log(filters);
     //on colon ":"
     }else if(event.keyCode == 186){
         var filterName = $('.searchInput').val();
@@ -65,8 +66,8 @@ function keyPress(){
             setSelect2Data();
 //            filterKeyPress(filterKey);
         }else{
-            ClearFields();
             alert("Invalid Filter Name!");
+            ClearFields();
         }
     }
 }
