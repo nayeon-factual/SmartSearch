@@ -8,8 +8,11 @@ var URL = 'http://www.factual.com/data/t/'+table_id+'#';
 var filters = {}; 
 var filtersCount = 0;
 var qHistory = [];
+var filterKey = "";
 
+$(function() {$('.searchInput').focus();});
 initializeFilters();
+
 
 function initializeFilters() {
     var schemaCall = 'http://api.v3.factual.com/t/'+table_id+'/schema?KEY='+key;
@@ -48,7 +51,6 @@ function findSearchableSyn(word){
 }//returns "'syn', 'syn', 'syn'"
 
 function keyPress(){
-    
     //on Enter
     if (event.keyCode == 13) {
         updateqURL();
@@ -59,9 +61,9 @@ function keyPress(){
         if(isSearchable(filterName)){
             $('#categoryLabel').html(filterName+' :');//tolowercase?
             swapView();
-            var filterKey = getFilterName(filterName);
-            setSelect2Data(filterKey);
-            filterKeyPress(filterKey);
+            filterKey += getFilterName(filterName);
+            setSelect2Data();
+//            filterKeyPress(filterKey);
         }else{
             ClearFields();
             alert("Invalid Filter Name!");
@@ -109,6 +111,7 @@ function swapView(){
         //Close Filter View
         $('.hiddenToggle').css('display', 'none');
         $('.searchInput').css('display', 'block');
+        $(function() {$('.searchInput').focus();});
     }
     //**TODO** add red/green filter color based on facetable filter
 }
@@ -121,11 +124,18 @@ function ClearFields() {
 function reset() {
     URL = 'http://www.factual.com/data/t/'+table_id+'#';
     $("#history").empty();
-    filtersHistory = {country:0, region:0, locality:0, post_town:0, category_id:0, chain_name:0};//**TODO** make function to empty all arrays
+    emptyFiltersHistory();
     filtersCount = 0;
     qHistory = [];
     if($('.hiddenToggle').css('display')=='block'){
         swapView();
+    }
+}
+
+function emptyFiltersHistory(){
+    for(i=0; i<Object.keys(filters).length; i++){
+        var currentKey = Object.keys(filters)[i];
+        filters[currentKey].history=[];
     }
 }
 

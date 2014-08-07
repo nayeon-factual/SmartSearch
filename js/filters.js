@@ -1,21 +1,24 @@
-//**TODO** put valid history term in filters[key].history after populating history div
-
+//**TODO** do not show dropdown until new facets call has been completed
+//**TODO** make undo button in case chose wrong filter by mistake. (swapview)
+//**TODO** how bad is the update select2data delay
 
 //take in current filterName and sets appropriate select2 data to filterInput field
-function setSelect2Data(filterKey){
+function setSelect2Data(){
     var facetsObject = [];
-    $.get(updateFacetsAPI(filterKey)).done(function (obj){
+    var updatedFacetsAPI = updateFacetsAPI();
+    $.get(updatedFacetsAPI).done(function (obj){
         var facetsObject = obj.response.data[filterKey];
-        var facetsKeys = Object.keys(facetsObject); //['us','cn','fr',....]
+        var facetsKeys = Object.keys(facetsObject); //
         console.log('facobj'+JSON.stringify(facetsKeys));
-        var S2Data = formatSelect2Data(filterKey, facetsKeys);//**TODO**
+        var S2Data = formatSelect2Data(facetsKeys);
         setSelect2(S2Data);
+        console.log(updateFacetsAPI());//not updating
     }); //wait to return facetsObject
 }
 
-function updateFacetsAPI(filterKey){
+function updateFacetsAPI(){
     var facetsAPI = 'http://api.v3.factual.com/t/'+table_id+'/facets?select='+filterKey+'&limit=50&KEY='+key;
-    //can't push limit higher than 50 - yes, try a couple hundred
+    //push limit higher than 50 - try a couple hundred
     
     if(qHistory.length > 0){
         facetsAPI +='&q=';
@@ -28,35 +31,29 @@ function updateFacetsAPI(filterKey){
         var formattedFilters = formatExistingFilters();
         facetsAPI+='&filters='+formattedFilters;
     }
-    console.log('facetsAPI '+facetsAPI);
     return facetsAPI;
 }
 
 function formatExistingFilters(){
     var formatted = '{"$and":['
-    var formattedNum = 0;
-    
+    console.log('filters '+filters);
     for(f=0; f<Object.keys(filters).length; f++){
-        if(formattedNum>0){
-            formatted+=', ';
-        }
         var currentFilterKey = Object.keys(filters)[f];
         if(filters[currentFilterKey].history.length==1){ 
-            formatted+='{"'+currentFilterKey+'":{"$eq":"'+filters[currentFilterKey].history[0]+'"}}';
-            formattedNum++;
+            formatted+='{"'+currentFilterKey+'":{"$eq":"'+filters[currentFilterKey].history[0]+'"}}, ';
         }else if(filters[currentFilterKey].history.length > 1){
             var historyString = filters[currentFilterKey].history.toString();
             var historyArray = historyString.split(',').join('","');
-            formatted+='{"'+currentFilterKey+'":{"$in":["'+historyArray+'"]}}';
-            formattedNum++;
+            formatted+='{"'+currentFilterKey+'":{"$in":["'+historyArray+'"]}}, ';
         }
     }
+    formatted = formatted.substring(0,formatted.length-2)
     formatted += ']}'
     return formatted;
 }
 
 //returns correctly formatted data for select2
-function formatSelect2Data(filterKey, facetsArray){
+function formatSelect2Data(facetsArray){
     if(filterKey=='category_ids'){//obj = [12,145,213]
         //**TODO** implement override
     }else{ //default behavior
@@ -75,46 +72,54 @@ function formatSelect2Data(filterKey, facetsArray){
 
 function setSelect2(s2data){
     $(document).ready(function() {
-//        $(".filterInput").select2('focus');
         $(".filterInput").select2({
             multiple: true,
             data: s2data})
-        .on('change', function(e){
-            console.log('onchange'+e.val);
-            //e.value returns value of the selected --> put into URL
-//            updateFiltersURL(objName, e.val[0]);
+        .on('change', function(e){//**TODO**saving filterKey, must remove previous filterkeys
+            console.log(e);
+//            selected+=e.val[0];
+            //console.log('changing');
+            updateFiltersURL(e.val[0]);
+            //console.log('URL: '+URL);
+            //console.log('');
         });
+        $('.filterInput').prev('.select2-container').find('.select2-input').focus();
+//        updateFiltersURL(filterKey, e.val[0]);
+//        console.log('sel '+selected);
     });
 }
 
-function updateFiltersURL (filter) { //for countries, take in 'country' etc.
-    var filterVal = $('.filterInput').val();
-    generateURL(filter, filterVal);//generateURL("country", "US") or generateURL("category_ids", "Automotive")
+function updateFiltersURL (filterVal) { 
+    //console.log('updating filter url.')
+    //console.log('globalFilterKey: '+filterKey);
+//    var filterVal = $('.filterInput').val(); **TODO** implement handling for when value in inputs is not from dropdown (select2: formatNoMatches)
+    generateURL(filterVal);
     filtersCount++;
-    filtersHistory[objName]+=1;//**TODO** no longer formatted this way. add to history key in array
-    $("#history").append('<div class="filterbox">'+eval(objName)[selectVal]+'</div>');
-//    ClearFields();
-//    swapView();
+    filters[filterKey].history.push(filterVal);
+    $("#history").append('<div class="filterbox">'+filterKey+': '+filterVal+'</div>');
+    filterKey="";
+    ClearFields();
+    swapView();
 }
 
-function generateURL(filter, filterValue) {
+function generateURL(filterValue) {
     //**TODO** need separate handler for category - if filter is category, parse filter adn filterValue to make sure it's in "category_id" and "123" form.("category"->"ids", "Automotive"->"2")
     if (filtersCount==0) {
-    var firstInput = formatNewFilterInput(filter, filterValue);
+    var firstInput = formatNewFilterInput(filterKey, filterValue);
         if(qHistory.length==0){
         URL = URL+'filters={"$and":['+firstInput+']}';
         }else{
         URL = URL+'&filters={"$and":['+firstInput+']}';
         }
         
-    } else if (filters[filter].history.length==0) {
-        newFilterInput = formatNewFilterInput(filter, filterValue);
+    } else if (filters[filterKey].history.length==0) {
+        newFilterInput = formatNewFilterInput(filterKey, filterValue);
         URL = URL.slice(0, URL.indexOf('filters={"$and":[')+17)+newFilterInput+','+URL.slice(URL.indexOf('filters={"$and":[')+17); 
     
-    } else if (filters[filter].history.length>0) {
+    } else if (filters[filterKey].history.length>0) {
         filterValue = filterValue.split(' ').join('+');
-        URL = URL.split('"'+fName+'":{"$eq"').join('"'+fName+'":{"$in"');
-        var firstIndex = URL.indexOf(fName+'":{"$in":')+fName.length+9;
+        URL = URL.split('"'+filterKey+'":{"$eq"').join('"'+filterKey+'":{"$in"');
+        var firstIndex = URL.indexOf(filterKey+'":{"$in":')+filterKey.length+9;
         var closingBraceIndex = URL.slice(firstIndex).indexOf("}}")
         URL = URL.slice(0, firstIndex) + '["' + filterValue + '", ' + URL.slice(firstIndex).slice(0,closingBraceIndex) +']'+ URL.slice(firstIndex).slice(closingBraceIndex);
     }
