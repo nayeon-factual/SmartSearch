@@ -1,12 +1,14 @@
 //**TODO** do not show dropdown until new facets call has been completed
 //**TODO** make undo button in case chose wrong filter by mistake. (swapview)
 //**TODO** how bad is the update select2data delay
+//**TODO** take a look at setSelect2.on('change') - the looping twice is weird. 
 //**TODO** handling capitalization things: updated history should look more refined, inputs can be in upper or lower cases
 
 //take in current filterName and sets appropriate select2 data to filterInput field
 function setSelect2Data(){
     var facetsObject = [];
     var updatedFacetsAPI = updateFacetsAPI();
+    console.log('updatedFacAPI '+updatedFacetsAPI)
     $.get(updatedFacetsAPI).done(function (obj){
         var facetsObject = obj.response.data[filterKey];
         var facetsKeys = Object.keys(facetsObject); //
@@ -17,8 +19,7 @@ function setSelect2Data(){
 }
 
 function updateFacetsAPI(){
-    var facetsAPI = 'http://api.v3.factual.com/t/'+table_id+'/facets?select='+filterKey+'&limit=50&KEY='+key;
-    //push limit higher than 50 - try a couple hundred
+    var facetsAPI = 'http://api.v3.factual.com/t/'+table_id+'/facets?select='+filterKey+'&limit=100&KEY='+key;
     
     if(qHistory.length > 0){
         facetsAPI +='&q=';
@@ -85,16 +86,27 @@ function setSelect2(s2data){
             containerCssClass:'s2Container',
             dropdownCssClass:'s2DropDown',
             multiple: true,
-            data: s2data})
+            data: s2data,
+//            formatNoMatches: function(term) {//**TODO** 
+//                $(".select2-input").keyup(function(event){
+//                    if (event.keyCode == 13) {
+//                        console.log(term);
+//                    }else{
+//                    }
+//                });
+////                console.log(finalTerm);
+//            }
+            })
         .on('change', function(e){
+            if(filterKey!=""){
             updateFiltersURL(e.val[0]);
+            }
         });
         $('.filterInput').prev('.select2-container').find('.select2-input').focus();
     });
 }
 
 function updateFiltersURL (filterVal) { 
-//    var filterVal = $('.filterInput').val(); **TODO** implement handling for when value in inputs is not from dropdown (select2: formatNoMatches)
     generateURL(filterVal);
     filtersCount++;
     filters[filterKey].history.push(filterVal);
@@ -116,11 +128,10 @@ function generateURL(filterValue) {
     if (filtersCount==0) {
     var firstInput = formatNewFilterInput(filterKey, filterValue);
         if(qHistory.length==0){
-        URL = URL+'filters={"$and":['+firstInput+']}';
+            URL = URL+'filters={"$and":['+firstInput+']}';
         }else{
-        URL = URL+'&filters={"$and":['+firstInput+']}';
+            URL = URL+'&filters={"$and":['+firstInput+']}';
         }
-        
     } else if (filters[filterKey].history.length==0) {
         newFilterInput = formatNewFilterInput(filterKey, filterValue);
         URL = URL.slice(0, URL.indexOf('filters={"$and":[')+17)+newFilterInput+','+URL.slice(URL.indexOf('filters={"$and":[')+17); 

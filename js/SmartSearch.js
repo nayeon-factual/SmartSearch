@@ -13,7 +13,6 @@ var filterKey = "";
 $(function() {$('.searchInput').focus();});
 initializeFilters();
 
-
 function initializeFilters() {
     var schemaCall = 'http://api.v3.factual.com/t/'+table_id+'/schema?KEY='+key;
     $.getJSON(schemaCall).done(function (data){
@@ -40,7 +39,7 @@ function initializeFilters() {
                 }
             }
         }
-    }); //wait to return filters
+    }); 
 }
 
 function addSearchableSyns(word){
@@ -54,7 +53,11 @@ function addSearchableSyns(word){
 function keyPress(){
     //on Enter
     if (event.keyCode == 13) {
-        updateqURL();
+        if($('.searchInput').val()!=""){
+            updateqURL();
+        }else{
+            alert('Empty Search!');
+        }
     //on colon ":"
     }else if(event.keyCode == 186){
         var filterName = $('.searchInput').val();
@@ -78,7 +81,6 @@ function filterKeyPress(filterKey){
         updateFiltersURL(filterKey);
         }
     })
-
 }
 
 function isSearchable(filterName){
@@ -107,6 +109,7 @@ function swapView(){
         //Show Filter View
         $('.hiddenToggle').css('display', 'block');
         $('.searchInput').css('display', 'none');
+        $('.filterInput').prev('.select2-container').find('.select2-input').focus();
     }else{
         //Close Filter View
         $('.hiddenToggle').css('display', 'none');
