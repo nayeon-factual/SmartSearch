@@ -82,6 +82,8 @@ function formatSelect2Data(facetsArray){
 function setSelect2(s2data){
     $(document).ready(function() {
         $(".filterInput").select2({
+            containerCssClass:'s2Container',
+            dropdownCssClass:'s2DropDown',
             multiple: true,
             data: s2data})
         .on('change', function(e){

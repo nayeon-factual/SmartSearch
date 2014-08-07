@@ -39,9 +39,9 @@
 
     #suggestions{
         position: absolute;
-        left: 12%;
+        left: 11%;
         right: 10%;
-        top:26%;
+        top:25.8%;
         font-family: Arial, Helvetica, sans-serif;
 		font-size:13px;
         display: block;
@@ -67,7 +67,7 @@
         padding: 5px;
         left: 40%;
         right: 10%;
-        top: 35%;
+        top: 34%;
         width: 50%;
         height:10%;
 	}
@@ -112,4 +112,14 @@
         width: 100px;
         height: 40px;
         font-size:24px;
+    }
+
+    .s2Container{
+/*        background: red;*/
+/*        font-size: 20px;*/
+    }
+
+    .s2DropDown{
+        font-family: Arial, Helvetica, sans-serif;
+/*		font-size:14px;*/
     }

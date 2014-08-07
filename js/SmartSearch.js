@@ -52,7 +52,6 @@ function addSearchableSyns(word){
 }
 
 function keyPress(){
-    console.log(filters);
     //on Enter
     if (event.keyCode == 13) {
         updateqURL();
