@@ -12,8 +12,7 @@ function setSelect2Data(){
         console.log('facobj'+JSON.stringify(facetsKeys));
         var S2Data = formatSelect2Data(facetsKeys);
         setSelect2(S2Data);
-        console.log(updateFacetsAPI());//not updating
-    }); //wait to return facetsObject
+    }); 
 }
 
 function updateFacetsAPI(){
@@ -36,15 +35,16 @@ function updateFacetsAPI(){
 
 function formatExistingFilters(){
     var formatted = '{"$and":['
-    console.log('filters '+filters);
     for(f=0; f<Object.keys(filters).length; f++){
         var currentFilterKey = Object.keys(filters)[f];
-        if(filters[currentFilterKey].history.length==1){ 
+        if(currentFilterKey!=filterKey){
+            if(filters[currentFilterKey].history.length==1){ 
             formatted+='{"'+currentFilterKey+'":{"$eq":"'+filters[currentFilterKey].history[0]+'"}}, ';
-        }else if(filters[currentFilterKey].history.length > 1){
+            }else if(filters[currentFilterKey].history.length > 1){
             var historyString = filters[currentFilterKey].history.toString();
             var historyArray = historyString.split(',').join('","');
             formatted+='{"'+currentFilterKey+'":{"$in":["'+historyArray+'"]}}, ';
+            }
         }
     }
     formatted = formatted.substring(0,formatted.length-2)
@@ -52,13 +52,21 @@ function formatExistingFilters(){
     return formatted;
 }
 
-//returns correctly formatted data for select2
+//Returns correctly formatted data for select2
 function formatSelect2Data(facetsArray){
-    if(filterKey=='category_ids'){//obj = [12,145,213]
-        //**TODO** implement override
+    var filterLabel = filters[filterKey].label;
+    var sel2Data = [{text: filterLabel, children:[]}];
+    
+    if(filterKey=='category_ids'){//facetsArray = ["12","145","213"]
+        for(i=0; i<facetsArray.length; i++){
+            var cat_set = {};
+            var cat_id = facetsArray[i];
+            var cat_text = category_ids[cat_id];
+            cat_set["id"] = cat_id;
+            cat_set["text"] = cat_text;
+            sel2Data[0]["children"].push(cat_set);
+        }
     }else{ //default behavior
-        var filterLabel = filters[filterKey].label;
-        var sel2Data = [{text: filterLabel, children:[]}]; //takes array of facets ['us', 'gb',...] & filterName or select
         for(i=0; i<facetsArray.length; i++){
             var filt_set = {};
             var option = facetsArray[i];
@@ -67,6 +75,7 @@ function formatSelect2Data(facetsArray){
             sel2Data[0]["children"].push(filt_set);
         }
     }
+    console.log(sel2Data);
     return sel2Data;
 }
 
@@ -75,23 +84,14 @@ function setSelect2(s2data){
         $(".filterInput").select2({
             multiple: true,
             data: s2data})
-        .on('change', function(e){//**TODO**saving filterKey, must remove previous filterkeys
-            console.log(e);
-//            selected+=e.val[0];
-            //console.log('changing');
+        .on('change', function(e){
             updateFiltersURL(e.val[0]);
-            //console.log('URL: '+URL);
-            //console.log('');
         });
         $('.filterInput').prev('.select2-container').find('.select2-input').focus();
-//        updateFiltersURL(filterKey, e.val[0]);
-//        console.log('sel '+selected);
     });
 }
 
 function updateFiltersURL (filterVal) { 
-    //console.log('updating filter url.')
-    //console.log('globalFilterKey: '+filterKey);
 //    var filterVal = $('.filterInput').val(); **TODO** implement handling for when value in inputs is not from dropdown (select2: formatNoMatches)
     generateURL(filterVal);
     filtersCount++;

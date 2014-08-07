@@ -21,25 +21,9 @@
         <input type="hidden" class="filterInput" placeholder="Search"/>
     </div>
         
-        
-<!--
-    <script>
-    var facObj = [];
-    var getFacets = $.get('http://api.v3.factual.com/t/places/facets?select=country&q=starbucks&KEY=i9VTDsvooscG7eFQ6ycBX16gwAvLqOVUDv9u2dMh', function(data){
-        var countries = data.response.data.country;
-        var listCountries = Object.keys(countries);
-        facObj += listCountries;
-    })
-    getFacets.done(function (obj){
-        console.log(facObj);
-//        var facets = facetsJSON.responseJSON.response.data.country;
-//    facObj.push(obj.response.data.country);
-//    console.log(facObj);
-    });
-    </script>
--->
-        
-
+    <p id="suggestions">
+        Suggested Searches: &nbsp; "country: US"  &nbsp; &nbsp; "region: CA"  &nbsp; &nbsp; "city: Los Angeles" &nbsp; &nbsp; "chain_name: Starbucks"    
+    </p>
         
     <div id="buttons">
 <!--        <input type="button" value="Add Filter" id="searchButton" onClick=""/>-->
