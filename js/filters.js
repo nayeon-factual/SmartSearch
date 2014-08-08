@@ -1,4 +1,3 @@
-//**TODO** do not show dropdown until new facets call has been completed
 //**TODO** make undo button in case chose wrong filter by mistake. (swapview)
 //**TODO** how bad is the update select2data delay
 //**TODO** take a look at setSelect2.on('change') - the looping twice is weird. 

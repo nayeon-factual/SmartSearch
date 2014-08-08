@@ -61,11 +61,22 @@
         top:115%;
     }
 
-    #suggestions{
+    .suggestions{
         position: absolute;
         left: 11%;
         right: 10%;
-        top:25.8%;
+        top:26%;
+        width:70%;
+        font-family: Arial, Helvetica, sans-serif;
+		font-size:13px;
+        display: block;
+        color: #CFCFCF;
+    }
+
+    .filterSuggestions{
+        position: absolute;
+        left: 89%;
+/*        right: 10%;*/
         width:70%;
         font-family: Arial, Helvetica, sans-serif;
 		font-size:13px;

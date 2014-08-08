@@ -75,6 +75,13 @@ function keyPress(){
 function triggerAfterS2Set(){
     console.log('dropdown set!');
     swapView();
+    $('.filterInput').prev('.select2-container').find('.select2-input').keydown(function(e){
+        //on Escape
+        if(e.keyCode == 27){
+            swapView();
+            ClearFields();
+        }
+    });
 //            filterKeyPress(filterKey);
 }
 
