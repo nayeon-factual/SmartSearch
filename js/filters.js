@@ -1,9 +1,8 @@
-//**TODO** make undo button in case chose wrong filter by mistake. - now working on ESCAPE. 
 //**TODO** how bad is the update select2data delay
-//**TODO** take a look at setSelect2.on('change') - the looping twice is weird. 
-//**TODO** handling capitalization things: updated history should look more refined, inputs can be in upper or lower cases
 //**TODO** set locality first limits region. is this intuitive behavior?
-//**TODO** colon in keyword
+//**TODO** handling colon in keyword
+//**TODO** take a look at setSelect2.on('change') - the looping twice is weird. 
+
 
 //take in current filterName and sets appropriate select2 data to filterInput field
 function setSelect2Data(){
@@ -142,7 +141,7 @@ function generateURL(filterValue) {
         URL = URL.slice(0, URL.indexOf('filters={"$and":[')+17)+newFilterInput+','+URL.slice(URL.indexOf('filters={"$and":[')+17); 
     
     } else if (filters[filterKey].history.length>0) {
-        filterValue = filterValue.split(' ').join('+');//"san+diego"
+        filterValue = filterValue.split(' ').join('+');
         if(filters[filterKey].history.length==1) {
             URL = URL.split('"'+filterKey+'":{"$eq"').join('"'+filterKey+'":{"$in"');
             var firstIndex = URL.indexOf(filterKey+'":{"$in":')+filterKey.length+9;
