@@ -137,6 +137,7 @@ function reset() {
     emptyFiltersHistory();
     filtersCount = 0;
     qHistory = [];
+    $(function() {$('.searchInput').focus();});
     if($('.hiddenToggle').css('display')=='block'){
         swapView();
     }

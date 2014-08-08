@@ -14,7 +14,7 @@ function setSelect2Data(){
         console.log('got facets API');
         var facetsObject = obj.response.data[filterKey];
         var facetsKeys = Object.keys(facetsObject); //
-        console.log('facobj'+JSON.stringify(facetsKeys));
+        console.log('array of dropdown content '+JSON.stringify(facetsKeys));
         var S2Data = formatSelect2Data(facetsKeys);
         setSelect2(S2Data);
         triggerAfterS2Set();
@@ -105,18 +105,20 @@ function setSelect2(s2data){
             updateFiltersURL(e.val[0]);
             }
         });
-        $('.filterInput').prev('.select2-container').find('.select2-input').focus();
+//        $('.filterInput').prev('.select2-container').find('.select2-input').focus();
+//        console.log("im focused...again");
     });
 }
 
-function updateFiltersURL (filterVal) { 
+function updateFiltersURL(filterVal) { 
     ClearFields();
     generateURL(filterVal);
+    console.log(URL);
     filtersCount++;
     filters[filterKey].history.push(filterVal);
     updateHistory(filterVal);
-    filterKey="";
     swapView();
+    filterKey="";
 }
 
 function updateHistory(filterVal) {
@@ -140,11 +142,17 @@ function generateURL(filterValue) {
         URL = URL.slice(0, URL.indexOf('filters={"$and":[')+17)+newFilterInput+','+URL.slice(URL.indexOf('filters={"$and":[')+17); 
     
     } else if (filters[filterKey].history.length>0) {
-        filterValue = filterValue.split(' ').join('+');
-        URL = URL.split('"'+filterKey+'":{"$eq"').join('"'+filterKey+'":{"$in"');
-        var firstIndex = URL.indexOf(filterKey+'":{"$in":')+filterKey.length+9;
-        var closingBraceIndex = URL.slice(firstIndex).indexOf("}}")
-        URL = URL.slice(0, firstIndex) + '["' + filterValue + '", ' + URL.slice(firstIndex).slice(0,closingBraceIndex) +']'+ URL.slice(firstIndex).slice(closingBraceIndex);
+        filterValue = filterValue.split(' ').join('+');//"san+diego"
+        if(filters[filterKey].history.length==1) {
+            URL = URL.split('"'+filterKey+'":{"$eq"').join('"'+filterKey+'":{"$in"');
+            var firstIndex = URL.indexOf(filterKey+'":{"$in":')+filterKey.length+9;
+            var closingBraceIndex = URL.slice(firstIndex).indexOf("}}");
+            URL = URL.slice(0, firstIndex) + '["' + filterValue + '", ' + URL.slice(firstIndex).slice(0,closingBraceIndex) +']'+ URL.slice(firstIndex).slice(closingBraceIndex);
+        }else if(filters[filterKey].history.length>1) {
+            var firstIndex = URL.indexOf(filterKey+'":{"$in":')+filterKey.length+10;
+            var closingBraceIndex = URL.slice(firstIndex).indexOf("}}")
+            URL = URL.slice(0, firstIndex) + '"'+ filterValue + '", ' + URL.slice(firstIndex).slice(0,closingBraceIndex)+ URL.slice(firstIndex).slice(closingBraceIndex);
+        }
     }
 }
 
