@@ -64,6 +64,7 @@ function keyPress(){
         if(isSearchable(filterName)){
             filterKey += getFilterName(filterName);
             $('#categoryLabel').html(filterName+' :');//tolowercase?
+            $('.searchInput').prop('disabled', true);
             setSelect2Data();
         }else{
             alert("Invalid Filter Name!");
@@ -75,11 +76,15 @@ function keyPress(){
 function triggerAfterS2Set(){
     console.log('dropdown set!');
     swapView();
+    $('.searchInput').prop('disabled', false);
     $('.filterInput').prev('.select2-container').find('.select2-input').keydown(function(e){
-        //on Escape
+        //on Escape, exit filter view
         if(e.keyCode == 27){
             swapView();
             ClearFields();
+        }else if(e.keyCode == 13) {
+//            var thisValueThing = $('.filterInput').prev('.select2-container').find('.select2-input').val();
+//            console.log('tVT :'+thisValueThing);
         }
     });
 //            filterKeyPress(filterKey);

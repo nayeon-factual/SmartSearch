@@ -1,8 +1,9 @@
-//**TODO** make undo button in case chose wrong filter by mistake. (swapview)
+//**TODO** make undo button in case chose wrong filter by mistake. - now working on ESCAPE. 
 //**TODO** how bad is the update select2data delay
 //**TODO** take a look at setSelect2.on('change') - the looping twice is weird. 
 //**TODO** handling capitalization things: updated history should look more refined, inputs can be in upper or lower cases
 //**TODO** set locality first limits region. is this intuitive behavior?
+//**TODO** colon in keyword
 
 //take in current filterName and sets appropriate select2 data to filterInput field
 function setSelect2Data(){
@@ -10,10 +11,9 @@ function setSelect2Data(){
     var updatedFacetsAPI = updateFacetsAPI();
     console.log('updatedFacAPI '+updatedFacetsAPI)
     $.get(updatedFacetsAPI).done(function (obj){
-        console.log('got facets API');
         var facetsObject = obj.response.data[filterKey];
         var facetsKeys = Object.keys(facetsObject); //
-        console.log('array of dropdown content '+JSON.stringify(facetsKeys));
+//        console.log('array of dropdown content '+JSON.stringify(facetsKeys));
         var S2Data = formatSelect2Data(facetsKeys);
         setSelect2(S2Data);
         triggerAfterS2Set();
@@ -31,8 +31,11 @@ function updateFacetsAPI(){
         facetsAPI = facetsAPI.substring(0, facetsAPI.length -2);
         
     }if(filtersCount > 0){
+        if(filtersCount==filters[filterKey].history.length){
+        }else{
         var formattedFilters = formatExistingFilters();
         facetsAPI+='&filters='+formattedFilters;
+        }
     }
     return facetsAPI;
 }
@@ -42,13 +45,16 @@ function formatExistingFilters(){
     for(f=0; f<Object.keys(filters).length; f++){
         var currentFilterKey = Object.keys(filters)[f];
         if(currentFilterKey!=filterKey){
+            
             if(filters[currentFilterKey].history.length==1){ 
             formatted+='{"'+currentFilterKey+'":{"$eq":"'+filters[currentFilterKey].history[0]+'"}}, ';
+                
             }else if(filters[currentFilterKey].history.length > 1){
             var historyString = filters[currentFilterKey].history.toString();
             var historyArray = historyString.split(',').join('","');
             formatted+='{"'+currentFilterKey+'":{"$in":["'+historyArray+'"]}}, ';
             }
+            
         }
     }
     formatted = formatted.substring(0,formatted.length-2)
@@ -88,17 +94,11 @@ function setSelect2(s2data){
             containerCssClass:'s2Container',
             dropdownCssClass:'s2DropDown',
             multiple: true,
-            data: s2data,
-//            formatNoMatches: function(term) {//**TODO** 
-//                $(".select2-input").keyup(function(event){
-//                    if (event.keyCode == 13) {
-//                        console.log(term);
-//                    }else{
-//                    }
+            tags: s2data[0]['children']
+//            formatNoMatches: function() {
 //                });
-////                console.log(finalTerm);
 //            }
-            })
+        })
         .on('change', function(e){
             if(filterKey!=""){
             updateFiltersURL(e.val[0]);
@@ -112,7 +112,7 @@ function setSelect2(s2data){
 function updateFiltersURL(filterVal) { 
     ClearFields();
     generateURL(filterVal);
-    console.log(URL);
+//    console.log(URL);
     filtersCount++;
     filters[filterKey].history.push(filterVal);
     updateHistory(filterVal);
