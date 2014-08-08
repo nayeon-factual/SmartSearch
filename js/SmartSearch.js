@@ -60,10 +60,11 @@ function keyPress(){
         }
     //on colon ":"
     }else if(event.keyCode == 186){
-        var filterName = $('.searchInput').val();
+        var filterName = $('.searchInput').val().toLowerCase();
         if(isSearchable(filterName)){
             filterKey += getFilterName(filterName);
             $('#categoryLabel').html(filterName+' :');//tolowercase?
+            //disabled until select2 is done loading
             $('.searchInput').prop('disabled', true);
             setSelect2Data();
         }else{
@@ -74,7 +75,6 @@ function keyPress(){
 }
 
 function triggerAfterS2Set(){
-    console.log('dropdown set!');
     swapView();
     $('.searchInput').prop('disabled', false);
     $('.filterInput').prev('.select2-container').find('.select2-input').keydown(function(e){
@@ -82,21 +82,8 @@ function triggerAfterS2Set(){
         if(e.keyCode == 27){
             swapView();
             ClearFields();
-        }else if(e.keyCode == 13) {
-//            var thisValueThing = $('.filterInput').prev('.select2-container').find('.select2-input').val();
-//            console.log('tVT :'+thisValueThing);
         }
     });
-//            filterKeyPress(filterKey);
-}
-
-function filterKeyPress(filterKey){
-    $('.filterInput').keypress(function(event){
-        //on Enter
-        if (event.keyCode == 13) {
-        updateFiltersURL(filterKey);
-        }
-    })
 }
 
 function isSearchable(filterName){
@@ -162,6 +149,10 @@ function emptyFiltersHistory(){
     }
 }
 
+function capitalizeThis(word) {
+    return word.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
 function updateqURL() {
     var searchInput = $('.searchInput').val();
     qInput = formatqInput(searchInput);
@@ -174,7 +165,7 @@ function updateqURL() {
         }
         //Add to Keywords History
         qHistory.push(qInput);
-        $("#history").append('<div class="filterbox">'+searchInput+'</div>');
+        $("#history").append('<div class="filterbox">'+capitalizeThis(searchInput)+'</div>');
         ClearFields();
 }
 

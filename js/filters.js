@@ -121,10 +121,11 @@ function updateFiltersURL(filterVal) {
 }
 
 function updateHistory(filterVal) {
+    filterVal = capitalizeThis(filterVal);
     if(filterKey=="category_ids"){
         $("#history").append('<div class="filterbox"> Category: '+category_ids[filterVal]+'</div>');
     }else{
-        $("#history").append('<div class="filterbox">'+filterKey+': '+filterVal+'</div>');
+        $("#history").append('<div class="filterbox">'+capitalizeThis(filterKey)+': '+filterVal+'</div>');
     }
 }
 
