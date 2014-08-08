@@ -3,6 +3,7 @@
 //**TODO** how bad is the update select2data delay
 //**TODO** take a look at setSelect2.on('change') - the looping twice is weird. 
 //**TODO** handling capitalization things: updated history should look more refined, inputs can be in upper or lower cases
+//**TODO** set locality first limits region. is this intuitive behavior?
 
 //take in current filterName and sets appropriate select2 data to filterInput field
 function setSelect2Data(){
@@ -10,11 +11,13 @@ function setSelect2Data(){
     var updatedFacetsAPI = updateFacetsAPI();
     console.log('updatedFacAPI '+updatedFacetsAPI)
     $.get(updatedFacetsAPI).done(function (obj){
+        console.log('got facets API');
         var facetsObject = obj.response.data[filterKey];
         var facetsKeys = Object.keys(facetsObject); //
         console.log('facobj'+JSON.stringify(facetsKeys));
         var S2Data = formatSelect2Data(facetsKeys);
         setSelect2(S2Data);
+        triggerAfterS2Set();
     }); 
 }
 
@@ -107,12 +110,12 @@ function setSelect2(s2data){
 }
 
 function updateFiltersURL (filterVal) { 
+    ClearFields();
     generateURL(filterVal);
     filtersCount++;
     filters[filterKey].history.push(filterVal);
     updateHistory(filterVal);
     filterKey="";
-    ClearFields();
     swapView();
 }
 

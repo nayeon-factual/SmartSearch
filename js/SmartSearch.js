@@ -62,16 +62,20 @@ function keyPress(){
     }else if(event.keyCode == 186){
         var filterName = $('.searchInput').val();
         if(isSearchable(filterName)){
-            $('#categoryLabel').html(filterName+' :');//tolowercase?
-            swapView();
             filterKey += getFilterName(filterName);
+            $('#categoryLabel').html(filterName+' :');//tolowercase?
             setSelect2Data();
-//            filterKeyPress(filterKey);
         }else{
             alert("Invalid Filter Name!");
             ClearFields();
         }
     }
+}
+
+function triggerAfterS2Set(){
+    console.log('dropdown set!');
+    swapView();
+//            filterKeyPress(filterKey);
 }
 
 function filterKeyPress(filterKey){
@@ -87,8 +91,8 @@ function isSearchable(filterName){
     var filterKeys = Object.keys(filters);
     var searchableBool = false;
     for(k=0; k <filterKeys.length; k++) {
-        var filterKey = filterKeys[k].toString();
-        if(filters[filterKey].searchable.indexOf(filterName)>-1){
+        var currentfiltKey = filterKeys[k].toString();
+        if(filters[currentfiltKey].searchable.indexOf(filterName)>-1){
             searchableBool = true;
         }
     }
@@ -97,9 +101,9 @@ function isSearchable(filterName){
 
 function getFilterName(filterName){
     for(k=0; k <Object.keys(filters).length; k++) {
-        var filterKey = Object.keys(filters)[k].toString();
-        if(filters[filterKey].searchable.indexOf(filterName)>-1){
-            return filterKey;
+        var currfiltKey = Object.keys(filters)[k].toString();
+        if(filters[currfiltKey].searchable.indexOf(filterName)>-1){
+            return currfiltKey;
         }
     }
 }
@@ -109,11 +113,14 @@ function swapView(){
         //Show Filter View
         $('.hiddenToggle').css('display', 'block');
         $('.searchInput').css('display', 'none');
+        ClearFields();
         $('.filterInput').prev('.select2-container').find('.select2-input').focus();
+        console.log('im focused');
     }else{
         //Close Filter View
         $('.hiddenToggle').css('display', 'none');
         $('.searchInput').css('display', 'block');
+        filterKey = "";
         $(function() {$('.searchInput').focus();});
     }
     //**TODO** add red/green filter color based on facetable filter
@@ -153,14 +160,14 @@ function updateqURL() {
             URL = URL.slice(0, URL.indexOf("q=")+2)+qInput+','+URL.slice(URL.indexOf("q=")+2);
         }
         //Add to Keywords History
-        qHistory.push(qInput); //**TODO** push qInput or searchInput? (what does facets call take)
+        qHistory.push(qInput);
         $("#history").append('<div class="filterbox">'+searchInput+'</div>');
         ClearFields();
 }
 
 function formatqInput(i) {
     i = i.split(' ').join('+');
-    i = '"'+i+'"';
+//    i = '"'+i+'"';
     return i;
 }
 
