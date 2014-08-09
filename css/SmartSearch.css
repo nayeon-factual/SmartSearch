@@ -65,7 +65,7 @@
         position: absolute;
         left: 11%;
         right: 10%;
-        top:26%;
+        top:24%;
         width:70%;
         font-family: Arial, Helvetica, sans-serif;
 		font-size:13px;
@@ -77,7 +77,7 @@
         position: absolute;
         left: 89%;
 /*        right: 10%;*/
-        width:70%;
+        width:15%;
         font-family: Arial, Helvetica, sans-serif;
 		font-size:13px;
         display: block;
