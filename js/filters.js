@@ -103,15 +103,13 @@ function setSelect2(s2data){
             updateFiltersURL(e.val[0]);
             }
         });
-//        $('.filterInput').prev('.select2-container').find('.select2-input').focus();
-//        console.log("im focused...again");
     });
 }
 
 function updateFiltersURL(filterVal) { 
     ClearFields();
     generateURL(filterVal);
-//    console.log(URL);
+    makeReadCall();
     filtersCount++;
     filters[filterKey].history.push(filterVal);
     updateHistory(filterVal);
@@ -120,12 +118,19 @@ function updateFiltersURL(filterVal) {
 }
 
 function updateHistory(filterVal) {
-    filterVal = capitalizeThis(filterVal);
+    var newfilterVal = capitalizeThis(filterVal);
     if(filterKey=="category_ids"){
-        $("#history").append('<div class="filterbox"> Category: '+category_ids[filterVal]+'</div>');
+        $("#history").append('<div class="filterbox" id="'+filterVal+'" onmouseover="filterMouseOver(this);" onclick="removeCategorizedFilter(this)"> Category: '+category_ids[newfilterVal]+'</div>');
     }else{
-        $("#history").append('<div class="filterbox">'+capitalizeThis(filterKey)+': '+filterVal+'</div>');
+        $("#history").append('<div class="filterbox" id="'+filterVal+'" onmouseover="filterMouseOver(this);"onclick="removeCategorizedFilter(this)">'+capitalizeThis(filterKey)+': '+newfilterVal+'</div>');
     }
+}
+
+function removeCategorizedFilter(obj){
+    var inputToRemove = $(obj).attr('id');
+    filtersCount -= 1;
+    $(obj).remove();
+    makeReadCall();
 }
 
 function generateURL(filterValue) {

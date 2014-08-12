@@ -11,14 +11,16 @@ var qHistory = [];
 var filterKey = "";
 
 $(function() {$('.searchInput').focus();});
-initializeFilters();
+makeSchemaCall();
+makeReadCall();
 
-function initializeFilters() {
+function makeSchemaCall() {
     var schemaCall = 'http://api.v3.factual.com/t/'+table_id+'/schema?KEY='+key;
     $.getJSON(schemaCall).done(function (data){
         var fieldsData = data.response.view.fields;
         var stringifiedData = JSON.stringify(fieldsData);
         for(i=0; i<fieldsData.length; i++){
+            populateDataGridHeading(fieldsData[i]);
             if(fieldsData[i].faceted==true){
                 var fieldName = fieldsData[i].name.toString();
                 var fieldLabel = fieldsData[i].label.toString();
@@ -39,6 +41,8 @@ function initializeFilters() {
                 }
             }
         }
+//        createGrid();
+//        initializeGridHeaders();
     }); 
 }
 
@@ -55,6 +59,7 @@ function keyPress(){
     if (event.keyCode == 13) {
         if($('.searchInput').val()!=""){
             updateqURL();
+            makeReadCall();
         }else{
             alert('Empty Search!');
         }
@@ -140,6 +145,7 @@ function reset() {
     if($('.hiddenToggle').css('display')=='block'){
         swapView();
     }
+    makeReadCall();
 }
 
 function emptyFiltersHistory(){
@@ -151,6 +157,47 @@ function emptyFiltersHistory(){
 
 function capitalizeThis(word) {
     return word.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
+function filterMouseOver(obj){
+    var originalContent = obj.innerHTML;
+    var originalWidth = $(obj).width();
+    $(obj).mouseenter(function(){
+//        console.log(obj);
+        console.log('urlbeforeClick'+URL);
+        console.log(qHistory.length+' '+filtersCount);
+        $(obj).css({
+            'opacity':0.5,
+            'cursor':'pointer',
+            'width':originalWidth,
+            'text-align': 'center'
+        });
+        $(obj).html('Remove?');
+    }).mouseleave(function(){
+        $(obj).css('opacity',1);
+        $(obj).html(originalContent);
+    })
+}
+
+function removeqFilter(obj){
+    var inputToRemove = $(obj).attr('id');
+    var qInputToRemove = formatqInput(inputToRemove.toString());
+    if(qHistory.length==1){
+        URL = URL.replace('q='+qInputToRemove,'');
+        if(URL.indexOf('&'>-1)){
+            URL = URL.replace('&','');
+        }
+    }else if(qHistory.length>1){
+        if(URL.indexOf('='+qInputToRemove)>-1){
+            URL = URL.replace('='+qInputToRemove+',','=');
+        }else if(URL.indexOf(','+qInputToRemove)>-1){
+            URL = URL.replace(','+qInputToRemove,'');
+        }
+    }
+    console.log('postremoveURL '+URL);
+    qHistory.splice(qHistory.indexOf(qInputToRemove), 1);
+    $(obj).remove();
+    makeReadCall();
 }
 
 function updateqURL() {
@@ -165,7 +212,7 @@ function updateqURL() {
         }
         //Add to Keywords History
         qHistory.push(qInput);
-        $("#history").append('<div class="filterbox">'+capitalizeThis(searchInput)+'</div>');
+        $("#history").append('<div class="filterbox" id="'+searchInput+'" onmouseover="filterMouseOver(this);" onclick="removeqFilter(this)">'+capitalizeThis(searchInput)+'</div>');
         ClearFields();
 }
 
