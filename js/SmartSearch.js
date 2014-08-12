@@ -212,7 +212,7 @@ function updateqURL() {
         }
         //Add to Keywords History
         qHistory.push(qInput);
-        $("#history").append('<div class="filterbox" id="'+searchInput+'" onmouseover="filterMouseOver(this);" onclick="removeqFilter(this)">'+capitalizeThis(searchInput)+'</div>');
+        $("#history").append('<div class="filterbox" id="'+searchInput+'" onmouseenter="filterMouseOver(this);" onclick="removeqFilter(this)">'+capitalizeThis(searchInput)+'</div>');
         ClearFields();
 }
 

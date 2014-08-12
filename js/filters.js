@@ -120,9 +120,9 @@ function updateFiltersURL(filterVal) {
 function updateHistory(filterVal) {
     var newfilterVal = capitalizeThis(filterVal);
     if(filterKey=="category_ids"){
-        $("#history").append('<div class="filterbox" id="category_ids'+'__'+filterVal+'" onmouseover="filterMouseOver(this);" onclick="removeCategorizedFilter(this)"> Category: '+category_ids[newfilterVal]+'</div>');
+        $("#history").append('<div class="filterbox" id="category_ids'+'__'+filterVal+'" onmouseenter="filterMouseOver(this);" onclick="removeCategorizedFilter(this)"> Category: '+category_ids[newfilterVal]+'</div>');
     }else{
-        $("#history").append('<div class="filterbox" id="'+filterKey+'__'+filterVal+'" onmouseover="filterMouseOver(this);"onclick="removeCategorizedFilter(this)">'+capitalizeThis(filterKey)+': '+newfilterVal+'</div>');
+        $("#history").append('<div class="filterbox" id="'+filterKey+'__'+filterVal+'" onmouseenter="filterMouseOver(this);"onclick="removeCategorizedFilter(this)">'+capitalizeThis(filterKey)+': '+newfilterVal+'</div>');
     }
 }
 
