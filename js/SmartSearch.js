@@ -164,8 +164,8 @@ function filterMouseOver(obj){
     var originalContent = obj.innerHTML;
     var originalWidth = $(obj).width();
     $(obj).mouseenter(function(){
-        console.log($(obj));
-        console.log('urlbeforeClick'+URL);
+        // console.log($(obj));
+        // console.log('urlbeforeClick'+URL);
         $(obj).css({
             'opacity':0.5,
             'cursor':'pointer',
@@ -195,6 +195,7 @@ function removeqFilter(obj){
         }
     }
     qHistory.splice(qHistory.indexOf(qInputToRemove), 1);
+    console.log('postremoveurl'+URL);
     $(obj).remove();
     makeReadCall();
 }

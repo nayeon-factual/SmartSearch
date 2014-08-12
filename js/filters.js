@@ -1,8 +1,8 @@
+
 //**TODO** how bad is the update select2data delay
 //**TODO** set locality first limits region. is this intuitive behavior?
 //**TODO** handling colon in keyword
 //**TODO** take a look at setSelect2.on('change') - the looping twice is weird. 
-
 
 //take in current filterName and sets appropriate select2 data to filterInput field
 function setSelect2Data(){
@@ -130,45 +130,42 @@ function removeCategorizedFilter(obj){
     var inputToRemove = $(obj).attr('id');
     var keyToRemove = inputToRemove.slice(0,inputToRemove.indexOf('__'));
     var valToRemove = inputToRemove.slice(inputToRemove.indexOf('__')+2);
-    valToRemove = valToRemove.split(' ').join('+');
+    var formattedValToRemove = valToRemove.split(' ').join('+');
+    var historyOfKey = filters[keyToRemove].history;
+
     var openBraceIndex = URL.indexOf('{"'+keyToRemove+'":');
     var closingBraceIndex = URL.indexOf('}',URL.indexOf('{"'+keyToRemove+'"'))+1;
     var filterBrace = URL.substring(openBraceIndex,closingBraceIndex+1);
     
-    if(filters[keyToRemove].history.length==1){
+    if(historyOfKey.length==1){
 
-        console.log(filterBrace);
-        if(URL[closingBraceIndex+1]==',') {
-            URL = URL.replace(filterBrace+',','');
-        }else if (URL[openBraceIndex-1]) {
-            URL = URL.replace(','+filterBrace,'');
-        }else{
-            URL = URL.replace(filterBrace,'');
-        }
+        URL = URL.replace(filterBrace,'').replace('[,','[').replace(',,',',').replace(',]',']');
+
         URL = URL.replace('filters={"$and":[]}','');
         URL = URL.replace('&q=','q=');
         console.log(URL);
 
-    }else if(filters[keyToRemove].history.length==2){
+    }else if(historyOfKey.length==2){
 
         console.log(filterBrace);
-        var newfilterBrace = filterBrace.replace('"'+valToRemove+'"','').replace('$in','$eq').replace(',','').replace('[','').replace(']','');
+        var newfilterBrace = filterBrace.replace('"'+formattedValToRemove+'"','').replace('$in','$eq').replace(',','').replace('[','').replace(']','');
         URL = URL.replace(filterBrace,newfilterBrace)
         console.log(URL);
 
-    }else if(filters[keyToRemove].history.length>2){
+    }else if(historyOfKey.length>2){
         console.log(filterBrace);
         var filterBracket = filterBrace.substring(filterBrace.indexOf('['),filterBrace.indexOf(']')+1);
-        var newfilterBracket = filterBracket.replace('"'+valToRemove+'"','');
-        newfilterBracket.replace('[,','[').replace(',,',',').replace(',]',']');
+        var newfilterBracket = filterBracket.replace('"'+formattedValToRemove+'"','');
+        newfilterBracket = newfilterBracket.replace(/\s+/g, '').replace('[,','[').replace(',,',',').replace(',]',']');
         URL = URL.replace(filterBracket,newfilterBracket);
         console.log(URL);
     }
     
-    filters[keyToRemove].history.splice(filters[keyToRemove].indexOf(valToRemove), 1);
+    historyOfKey.splice(historyOfKey.indexOf(valToRemove), 1);
     filtersCount -= 1;
     $(obj).remove();
     makeReadCall();
+}
 
 function generateURL(filterValue) {
     if (filtersCount==0) {
