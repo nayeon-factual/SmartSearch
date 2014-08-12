@@ -43,6 +43,7 @@ function makeSchemaCall() {
         }
 //        createGrid();
 //        initializeGridHeaders();
+//        console.log(filters);
     }); 
 }
 
@@ -163,9 +164,8 @@ function filterMouseOver(obj){
     var originalContent = obj.innerHTML;
     var originalWidth = $(obj).width();
     $(obj).mouseenter(function(){
-//        console.log(obj);
+        console.log($(obj));
         console.log('urlbeforeClick'+URL);
-        console.log(qHistory.length+' '+filtersCount);
         $(obj).css({
             'opacity':0.5,
             'cursor':'pointer',
@@ -194,7 +194,6 @@ function removeqFilter(obj){
             URL = URL.replace(','+qInputToRemove,'');
         }
     }
-    console.log('postremoveURL '+URL);
     qHistory.splice(qHistory.indexOf(qInputToRemove), 1);
     $(obj).remove();
     makeReadCall();
