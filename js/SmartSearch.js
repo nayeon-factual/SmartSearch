@@ -41,6 +41,7 @@ function makeSchemaCall() {
                 }
             }
         }
+        console.log(gridColumns);
 //        createGrid();
 //        initializeGridHeaders();
 //        console.log(filters);
