@@ -1,6 +1,5 @@
 
 //**TODO** how bad is the update select2data delay
-//**TODO** set locality first limits region. is this intuitive behavior?
 //**TODO** handling colon in keyword
 //**TODO** take a look at setSelect2.on('change') - the looping twice is weird. 
 
@@ -8,7 +7,7 @@
 function setSelect2Data(){
     var facetsObject = [];
     var updatedFacetsAPI = updateFacetsAPI();
-    console.log('updatedFacAPI '+updatedFacetsAPI)
+    console.log('updatedFacAPI '+updatedFacetsAPI);
     $.get(updatedFacetsAPI).done(function (obj){
         var facetsObject = obj.response.data[filterKey];
         var facetsKeys = Object.keys(facetsObject); //
@@ -98,12 +97,23 @@ function setSelect2(s2data){
 //                });
 //            }
         })
+
+        .on('select2-focus', select2Focus).on("select2-blur", function () {
+            $(this).one('select2-focus', select2Focus)
+        })
+
         .on('change', function(e){
             if(filterKey!=""){
             updateFiltersURL(e.val[0]);
             }
         });
     });
+}
+
+function select2Focus() {
+    if(filterKey=='category_ids'){
+        $(this).select2('open');
+    }
 }
 
 function updateFiltersURL(filterVal) { 

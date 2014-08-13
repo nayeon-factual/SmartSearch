@@ -217,9 +217,10 @@ function updateqURL() {
 }
 
 function formatqInput(i) {
-    i = i.split(' ').join('+');
-//    i = '"'+i+'"';
-    return i;
+    if(i.match(/\s/g)){
+        i = i.split(' ').join('+');
+    }
+    return '"'+i+'"';
 }
 
 function openURL() {
