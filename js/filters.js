@@ -93,9 +93,6 @@ function setSelect2(s2data){
             dropdownCssClass:'s2DropDown',
             multiple: true,
             tags: s2data[0]['children']
-//            formatNoMatches: function() {
-//                });
-//            }
         })
 
         .on('select2-focus', select2Focus).on("select2-blur", function () {

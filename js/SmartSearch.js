@@ -41,7 +41,6 @@ function makeSchemaCall() {
                 }
             }
         }
-        console.log(gridColumns);
 //        createGrid();
 //        initializeGridHeaders();
 //        console.log(filters);
@@ -220,8 +219,9 @@ function updateqURL() {
 function formatqInput(i) {
     if(i.match(/\s/g)){
         i = i.split(' ').join('+');
+        i = '"'+i+'"';
     }
-    return '"'+i+'"';
+    return i;
 }
 
 function openURL() {
