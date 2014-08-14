@@ -2,6 +2,7 @@
 var table_id = 'places';
 var key = 'i9VTDsvooscG7eFQ6ycBX16gwAvLqOVUDv9u2dMh';
 var URL = 'http://www.factual.com/data/t/'+table_id+'#';
+var pageSizeLim;
 
 //Filters holds all appropriate details (label, searchable terms, history) on faceted filters
 // {name:{label:"Label", searchable:["name","label","synonyms"], history:["prevsearches"]}}
@@ -17,6 +18,8 @@ makeReadCall();
 function makeSchemaCall() {
     var schemaCall = 'http://api.v3.factual.com/t/'+table_id+'/schema?KEY='+key;
     $.getJSON(schemaCall).done(function (data){
+        pageSizeLim = data.response.view.page_size_limit;
+        console.log(pageSizeLim);
         var fieldsData = data.response.view.fields;
         var stringifiedData = JSON.stringify(fieldsData);
         for(i=0; i<fieldsData.length; i++){

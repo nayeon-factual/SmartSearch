@@ -7,7 +7,6 @@
 function setSelect2Data(){
     var facetsObject = [];
     var updatedFacetsAPI = updateFacetsAPI();
-    console.log('updatedFacAPI '+updatedFacetsAPI);
     $.get(updatedFacetsAPI).done(function (obj){
         var facetsObject = obj.response.data[filterKey];
         var facetsKeys = Object.keys(facetsObject); //
