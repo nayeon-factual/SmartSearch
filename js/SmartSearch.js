@@ -19,7 +19,7 @@ function makeSchemaCall() {
     var schemaCall = 'http://api.v3.factual.com/t/'+table_id+'/schema?KEY='+key;
     $.getJSON(schemaCall).done(function (data){
         pageSizeLim = data.response.view.page_size_limit;
-        console.log(pageSizeLim);
+        var rowLim = data.response.view.row_limit;
         var fieldsData = data.response.view.fields;
         var stringifiedData = JSON.stringify(fieldsData);
         for(i=0; i<fieldsData.length; i++){
@@ -44,6 +44,7 @@ function makeSchemaCall() {
                 }
             }
         }
+        console.log(gridColumns.length+JSON.stringify(gridColumns));
 //        createGrid();
 //        initializeGridHeaders();
 //        console.log(filters);
