@@ -13,10 +13,8 @@ var filterKey = "";
 
 $(function() {$('.searchInput').focus();});
 makeSchemaCall();
-//Call only for DataPreview_Table
-if (typeof makeReadCall == 'function') { 
-  makeReadCall();
-}
+makeReadCall();
+
 
 function makeSchemaCall() {
     var schemaCall = 'http://api.v3.factual.com/t/'+table_id+'/schema?KEY='+key;
@@ -61,13 +59,17 @@ function makeReadCall(){
     var initReadCall = URL.replace('www.factual.com/data','api.v3.factual.com');
     initReadCall += '&limit=50&KEY='+key;
     readCall = initReadCall.replace(table_id+'#',table_id+'?');
+    
     $.get(readCall).done(function(data){
         var readResults = data.response.data;
         //Call only for DataPreview_Table
         if (typeof populateGridData == 'function') { 
           populateGridData(readResults);
         }   
-        
+        //Call only for DataPreview_Map
+        if (typeof getCoordinates == 'function') { 
+          getCoordinates(readResults);
+        }   
     })
 }
 
