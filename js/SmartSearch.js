@@ -13,7 +13,10 @@ var filterKey = "";
 
 $(function() {$('.searchInput').focus();});
 makeSchemaCall();
-// makeReadCall();
+//Call only for DataPreview_Table
+if (typeof makeReadCall == 'function') { 
+  makeReadCall();
+}
 
 function makeSchemaCall() {
     var schemaCall = 'http://api.v3.factual.com/t/'+table_id+'/schema?KEY='+key;
@@ -23,14 +26,17 @@ function makeSchemaCall() {
         var fieldsData = data.response.view.fields;
         var stringifiedData = JSON.stringify(fieldsData);
         for(i=0; i<fieldsData.length; i++){
-            // populateDataGridHeading(fieldsData[i]);
+            //Call only for DataPreview_Table
+            if (typeof populateDataGridHeading == 'function') { 
+              populateDataGridHeading(fieldsData[i]);
+            }
             if(fieldsData[i].faceted==true){
                 var fieldName = fieldsData[i].name.toString();
                 var fieldLabel = fieldsData[i].label.toString();
                 if(fieldName=="category_ids" || fieldName=="category_labels"){
                     filters['category_ids']={};
                     filters['category_ids'].label="Category";
-                    filters['category_ids'].searchable=["category_ids", "category_labels", "Category"];//adding name and label
+                    filters['category_ids'].searchable=["category_ids", "category_labels", "Category"]; //adding name and label
                     addSearchableSyns('category_ids');
                     filters["category_ids"]['history']=[];
                 }else{
@@ -49,6 +55,20 @@ function makeSchemaCall() {
 //        initializeGridHeaders();
 //        console.log(filters);
     }); 
+}
+
+function makeReadCall(){
+    var initReadCall = URL.replace('www.factual.com/data','api.v3.factual.com');
+    initReadCall += '&limit=50&KEY='+key;
+    readCall = initReadCall.replace(table_id+'#',table_id+'?');
+    $.get(readCall).done(function(data){
+        var readResults = data.response.data;
+        //Call only for DataPreview_Table
+        if (typeof populateGridData == 'function') { 
+          populateGridData(readResults);
+        }   
+        
+    })
 }
 
 function addSearchableSyns(word){
