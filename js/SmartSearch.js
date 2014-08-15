@@ -59,7 +59,7 @@ function makeReadCall(){
     var initReadCall = URL.replace('www.factual.com/data','api.v3.factual.com');
     initReadCall += '&limit=50&KEY='+key;
     readCall = initReadCall.replace(table_id+'#',table_id+'?');
-    
+
     $.get(readCall).done(function(data){
         var readResults = data.response.data;
         //Call only for DataPreview_Table
@@ -146,7 +146,6 @@ function swapView(){
         $('.searchInput').css('display', 'none');
         ClearFields();
         $('.filterInput').prev('.select2-container').find('.select2-input').focus();
-        console.log('im focused');
     }else{
         //Close Filter View
         $('.hiddenToggle').css('display', 'none');
