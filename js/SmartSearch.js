@@ -13,7 +13,7 @@ var filterKey = "";
 
 $(function() {$('.searchInput').focus();});
 makeSchemaCall();
-makeReadCall();
+// makeReadCall();
 
 function makeSchemaCall() {
     var schemaCall = 'http://api.v3.factual.com/t/'+table_id+'/schema?KEY='+key;
@@ -23,7 +23,7 @@ function makeSchemaCall() {
         var fieldsData = data.response.view.fields;
         var stringifiedData = JSON.stringify(fieldsData);
         for(i=0; i<fieldsData.length; i++){
-            populateDataGridHeading(fieldsData[i]);
+            // populateDataGridHeading(fieldsData[i]);
             if(fieldsData[i].faceted==true){
                 var fieldName = fieldsData[i].name.toString();
                 var fieldLabel = fieldsData[i].label.toString();
@@ -44,7 +44,7 @@ function makeSchemaCall() {
                 }
             }
         }
-        console.log(gridColumns.length+JSON.stringify(gridColumns));
+        // console.log(gridColumns.length+JSON.stringify(gridColumns));
 //        createGrid();
 //        initializeGridHeaders();
 //        console.log(filters);
