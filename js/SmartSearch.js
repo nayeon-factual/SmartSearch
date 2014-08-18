@@ -57,54 +57,20 @@ function makeSchemaCall() {
 
 function makeReadCall(){
     var initReadCall = URL.replace('www.factual.com/data','api.v3.factual.com');
-    var readCall = initReadCall.replace(table_id+'#',table_id+'?');
-    console.log(typeof populateGridData == 'function');
-    //Call only for DataPreview_Table
-    if (typeof populateGridData == 'function') {
-    var limit = '50'; 
-        $.ajax({
-            type: "GET",
-            url: readCall + '&limit='+ limit +'&KEY='+key,
-            success: function (data){
-                var readResults = data.response.data;
-                  populateGridData(readResults);   
-            }
-        });
-    }
-    console.log(typeof getCoordinates == 'function');
-    //Call only for DataPreview_Map
-    if (typeof getCoordinates == 'function') { 
-        var limit = '2000';
-        console.log(readCall);
-        $.ajax(//reset select to lat/lng and factual id
-        {
-            type: "GET",
-            url: readCall + 'limit='+ limit + '&select=latitude,longitude,factual_id' +'&KEY='+key,
-            beforeSend: function (request)
-                {
-                    request.setRequestHeader("X-Factual-Lib", 'factual-data-preview-v.1.0');
-                },
-            // dataType: 'json',
-            // async: false,
-            // data: '{"username": "' + username + '", "password" : "' + password + '"}',
-            success: function (data){
-                var readResults = data.response.data;
-                getCoordinates(readResults);
-            }
-        });
-    }
+    initReadCall += '&limit=50&KEY='+key;
+    readCall = initReadCall.replace(table_id+'#',table_id+'?');
 
-//     $.get(readCall).done(function(data){
-//         var readResults = data.response.data;
-//         //Call only for DataPreview_Table
-//         if (typeof populateGridData == 'function') { 
-//           populateGridData(readResults);
-//         }   
-//         //Call only for DataPreview_Map
-//         if (typeof getCoordinates == 'function') { 
-//           getCoordinates(readResults);
-//         }   
-//     })
+    $.get(readCall).done(function(data){
+        var readResults = data.response.data;
+        //Call only for DataPreview_Table
+        if (typeof populateGridData == 'function') { 
+          populateGridData(readResults);
+        }   
+        //Call only for DataPreview_Map
+        if (typeof getCoordinates == 'function') { 
+          getCoordinates(readResults);
+        }   
+    })
 }
 
 function addSearchableSyns(word){
