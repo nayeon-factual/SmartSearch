@@ -124,9 +124,9 @@ function updateFiltersURL(filterVal) {
 function updateHistory(filterVal) {
     var newfilterVal = capitalizeThis(filterVal);
     if(filterKey=="category_ids"){
-        $("#history").append('<div class="filterbox" id="category_ids'+'__'+filterVal+'" onmouseenter="filterMouseOver(this);" onclick="removeCategorizedFilter(this)"> <span id=filterLabel>Category:</span> '+category_ids[newfilterVal]+'</div>');
+        $("#history").append('<div class="filterbox" id="category_ids'+'__'+filterVal+'" onmouseenter="filterMouseOver(this);" onclick="removeCategorizedFilter(this)"> <span id=filterLabel>Category:</span> '+category_ids[newfilterVal]+'<div id=removeDiv> × </div></div>');
     }else{
-        $("#history").append('<div class="filterbox" id="'+filterKey+'__'+filterVal+'" onmouseenter="filterMouseOver(this);"onclick="removeCategorizedFilter(this)"><span id=filterLabel>'+filterKey+':</span> '+newfilterVal+'</div>');
+        $("#history").append('<div class="filterbox" id="'+filterKey+'__'+filterVal+'" onmouseenter="filterMouseOver(this);"onclick="removeCategorizedFilter(this)"><span id=filterLabel>'+filterKey+':</span> '+newfilterVal+'<div id=removeDiv> × </div></div>');
     }
 }
 

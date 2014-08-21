@@ -126,13 +126,19 @@
     
     .filterbox{
         display: inline-block;
-        height:14px;
+        height:16px;
         margin: 3px;
         padding: 6px 10px;
         font-family: Arial, Helvetica, sans-serif;
 		font-size:12px;
         background-color: #0076b3;
         color: white;
+    }
+
+    #removeDiv{
+        display: inline-block;
+        font-size:14px;
+        margin-left:5px;
     }
 
     #resetbutton{
