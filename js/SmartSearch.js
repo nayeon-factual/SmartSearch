@@ -77,7 +77,7 @@ function makeSchemaCall() {
          var limit = '2000';
          var options = {
             method: "GET",
-             url: readCall + 'limit='+ limit + '&select=latitude,longitude,factual_id',
+             url: readCall + '&limit='+ limit + '&select=latitude,longitude,factual_id',
              headers: {
                 "X-Factual-Lib": 'factual-data-preview-v.1.0'
              },
@@ -87,6 +87,7 @@ function makeSchemaCall() {
                 getCoordinates(readResults);
              },
              failure: function(data){
+                // console.log(readCall);
                 alert("Failed to Get Coordinates Data!");
              }
          };
