@@ -95,7 +95,7 @@ function keyPress(){
         var filterName = $('.searchInput').val().toLowerCase();
         if(isSearchable(filterName)){
             filterKey += getFilterName(filterName);
-            $('#categoryLabel').html(filterName+' :');//tolowercase?
+            $('#categoryLabel').html(filterName);//tolowercase?
             //disabled until select2 is done loading
             $('.searchInput').prop('disabled', true);
             setSelect2Data();

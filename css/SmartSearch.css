@@ -1,27 +1,27 @@
     .hiddenToggle{
         display:none;
         position: absolute;
-        left: 5%;
-        right: 5%;
-        top: 13%;
-        width: 90%;
+        left: 3%;
+        right: 3%;
+        top: 5%;
+        width: 94%;
         height: 35px;
         margin: 5px;
     }
 
 	.searchInput{
         position: absolute;
-        left: 5%;
-        right: 5%;
-        top: 13%;
-        width: 90%;
+        left: 3%;
+        right: 3%;
+        top: 5%;
+        width: 94%;
         height: 35px;
         margin: 5px;
 		padding: 5px 15px;
         font-family: Arial, Helvetica, sans-serif;
 		font-size:14px;
 		border:1px solid #0076a3;
-		border-radius: 4px 4px;
+		border-radius: 2px 2px;
         display:block;            
 	}
 
@@ -32,8 +32,8 @@
 		border-radius: 0px 4px 4px 0px;
         font-family: Arial, Helvetica, sans-serif;
 		font-size:14px;
-        width: 80%;
-        left: 20%;
+        width: 85%;
+        left: 15%;
         height: inherit;
     }
 
@@ -41,13 +41,18 @@
         display: block;
         position:absolute;
         font-family: Arial, Helvetica, sans-serif;
-		font-size:15px;
+		font-size:12px;
+        font-weight: 500;
+        letter-spacing: .05em;
+        color: white;
+        text-transform: uppercase;
 		border:1px solid #0076a3;
-		border-radius: 4px 4px;
-        background-color: #E1FCF3;
-        width:20%;
-        height: 21px;
-        padding: 6px 0px;
+		border-radius: 2px 2px;
+        background-color: #0076b3;
+        /*background-color: #E1FCF3;*/
+        width:15%;
+        height: 17px;
+        padding: 8px 0px;
         text-align: center;
     }
 
@@ -63,9 +68,9 @@
 
     .suggestions{
         position: absolute;
-        left: 6%;
+        left: 4%;
         right: 10%;
-        top:18%;
+        top:10%;
         width:70%;
         font-family: Arial, Helvetica, sans-serif;
 		font-size:13px;
@@ -75,7 +80,7 @@
 
     .filterSuggestions{
         position: absolute;
-        left: 89%;
+        left: 88%;
 /*        right: 10%;*/
         width:15%;
         font-family: Arial, Helvetica, sans-serif;
@@ -84,15 +89,15 @@
         color: #CFCFCF;
     }
 
-    #buttons{
+/*    #buttons{
         position: absolute;
         padding: 5px;
-        left: 88%;
+        left: 89%;
         right: 10%;
-        top: 18%;
-        width: 20%;
+        top: 16%;
+        width: 6%;
         height:5%;
-	}
+	}*/
     
     #searchbutton{
         margin: 5px;
@@ -110,31 +115,43 @@
     
     #history{
         position: absolute;
-        top: 24%;
-        left: 5%;
+        top: 16%;
+        left: 3%;
         height: 10%;
-        width: 89%;
-        border: 5px solid #E1FCF3;
+        width: 93%;
+        border: 5px solid #EEE;
         padding: 5px;
         overflow: auto;
     }
     
     .filterbox{
         display: inline-block;
-        height:20px;
+        height:14px;
         margin: 3px;
-        padding: 3px 10px;
+        padding: 6px 10px;
         font-family: Arial, Helvetica, sans-serif;
-		font-size:14px;
-        background-color: #78CCB4;
+		font-size:12px;
+        background-color: #0076b3;
         color: white;
     }
 
     #resetbutton{
-        margin: 5px;
+        -webkit-appearance: none; 
+        -moz-appearance: none;
+        position: absolute;
+        background-color: #bbb;
+        color: white;
+        text-transform: uppercase;
+        font-size: 12px;
         width: 100px;
-        height: 40px;
-        font-size:24px;
+        height: 28px;
+        padding: 8px;
+        border-radius: 0px;
+        border:0px;
+        left: 89%;
+        right: 10%;
+        top: 17%;
+        margin: 5px;
     }
 
     .s2Container{

@@ -1,5 +1,3 @@
-
-//**TODO** how bad is the update select2data delay
 //**TODO** handling colon in keyword
 //**TODO** take a look at setSelect2.on('change') - the looping twice is weird. 
 
@@ -126,9 +124,9 @@ function updateFiltersURL(filterVal) {
 function updateHistory(filterVal) {
     var newfilterVal = capitalizeThis(filterVal);
     if(filterKey=="category_ids"){
-        $("#history").append('<div class="filterbox" id="category_ids'+'__'+filterVal+'" onmouseenter="filterMouseOver(this);" onclick="removeCategorizedFilter(this)"> Category: '+category_ids[newfilterVal]+'</div>');
+        $("#history").append('<div class="filterbox" id="category_ids'+'__'+filterVal+'" onmouseenter="filterMouseOver(this);" onclick="removeCategorizedFilter(this)"> <span id=filterLabel>Category:</span> '+category_ids[newfilterVal]+'</div>');
     }else{
-        $("#history").append('<div class="filterbox" id="'+filterKey+'__'+filterVal+'" onmouseenter="filterMouseOver(this);"onclick="removeCategorizedFilter(this)">'+capitalizeThis(filterKey)+': '+newfilterVal+'</div>');
+        $("#history").append('<div class="filterbox" id="'+filterKey+'__'+filterVal+'" onmouseenter="filterMouseOver(this);"onclick="removeCategorizedFilter(this)"><span id=filterLabel>'+filterKey+':</span> '+newfilterVal+'</div>');
     }
 }
 
