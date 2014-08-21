@@ -55,23 +55,45 @@ function makeSchemaCall() {
     }); 
 }
 
-function makeReadCall(){
-    var initReadCall = URL.replace('www.factual.com/data','api.v3.factual.com');
-    initReadCall += '&limit=50&KEY='+key;
-    readCall = initReadCall.replace(table_id+'#',table_id+'?');
+ function makeReadCall(){
+     var initReadCall = URL.replace('www.factual.com/data','api.v3.factual.com');
+    var readCall = initReadCall.replace(table_id+'#',table_id+'?');
 
-    $.get(readCall).done(function(data){
-        var readResults = data.response.data;
-        //Call only for DataPreview_Table
-        if (typeof populateGridData == 'function') { 
-          populateGridData(readResults);
-        }   
-        //Call only for DataPreview_Map
-        if (typeof getCoordinates == 'function') { 
-          getCoordinates(readResults);
-        }   
-    })
+    //Call only for DataPreview_Table
+    if (typeof populateGridData == 'function') {
+    var limit = '50'; 
+        $.ajax({
+             type: "GET",
+             url: readCall + '&limit='+ limit +'&KEY='+key,
+             success: function (data){
+                 var readResults = data.response.data;
+                   populateGridData(readResults);   
+             }
+         });
+     }
+
+     //Call only for DataPreview_Map
+     if (typeof getCoordinates == 'function') { 
+         var limit = '2000';
+         var options = {
+            method: "GET",
+             url: readCall + 'limit='+ limit + '&select=latitude,longitude,factual_id',
+             headers: {
+                "X-Factual-Lib": 'factual-data-preview-v.1.0'
+             },
+             success: function (data){
+                var resultsObj = $.parseJSON(data.text);
+                var readResults = resultsObj.response.data;
+                getCoordinates(readResults);
+             },
+             failure: function(data){
+                alert("Failed to Get Coordinates Data!");
+             }
+         };
+        oauth.request(options);
+     }
 }
+
 
 function addSearchableSyns(word){
     var synArray = synonyms[table_id][word];
