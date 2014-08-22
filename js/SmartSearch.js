@@ -75,9 +75,10 @@ function makeSchemaCall() {
      //Call only for DataPreview_Map
      if (typeof getCoordinates == 'function') { 
          var limit = '2000';
+         var highVolURL = readCall + '&limit='+ limit + '&select=latitude,longitude,factual_id';
          var options = {
             method: "GET",
-             url: readCall + '&limit='+ limit + '&select=latitude,longitude,factual_id',
+             url: highVolURL,
              headers: {
                 "X-Factual-Lib": 'factual-data-preview-v.1.0'
              },
@@ -91,6 +92,7 @@ function makeSchemaCall() {
                 alert("Failed to Get Coordinates Data!");
              }
          };
+        console.log(highVolURL);
         oauth.request(options);
      }
 }
@@ -230,9 +232,6 @@ function filterMouseOver(obj){
         $(obj).css('opacity',1);
         $(obj).html(originalContent);
     })
-
-
-
 }
 
 function removeqFilter(obj){
